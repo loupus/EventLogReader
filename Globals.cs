@@ -11,9 +11,50 @@ namespace EventLogReader
 
     public static class Globals
     {
-        public static readonly object _BufferLock = new object();
+        public static readonly object _FsBufferLock = new object();
+        public static readonly object _EwBufferLock = new object();
         public static string localPath = @"C:\Users\hakansoyalp\Desktop\watch\";
         public static string remotePath = @"C:\Users\hakansoyalp\Desktop\watch\";
+
+        public static string SqldServer = "127.0.0.1";
+        public static string SqldDb = "FileAudit";
+        public static bool SqlIstrusted = true;
+        public static string SqldUser;
+        public static string SqldPassword;
+
+        public static string ConnectionString = "";
+
+        public static void SetSqlConStr()
+        {
+            if(SqlIstrusted)
+            {
+                ConnectionString = string.Format("Server={0};Database={1};Trusted_Connection=True;",SqldServer,SqldDb,SqldUser,SqldPassword);
+            }
+            else
+                ConnectionString = string.Format("Server={0};Database={1};User Id={2};Password={3};", SqldServer, SqldDb, SqldUser, SqldPassword);
+          
+        }
+
+        static List<fsArgument> FsArgs = new List<fsArgument>();
+       public static List<ewArgument> EwArgs = new List<ewArgument>();
+
+        public static void AddFsArg(fsArgument parg)
+        {
+            if (parg == null) return;
+            lock(_FsBufferLock)
+            {
+                FsArgs.Add(parg);
+            }
+        }
+
+        public static void AddEwArg(ewArgument parg)
+        {
+            if (parg == null) return;
+            lock (_EwBufferLock)
+            {
+                EwArgs.Add(parg);
+            }
+        }
 
         public static int[] EventIds =
         {
@@ -38,6 +79,7 @@ namespace EventLogReader
         public string User;
         public string SourceIp;
         public DateTime WhenHappened;
+        public bool Stat;
     };
 
     public class ewArgument
@@ -55,6 +97,7 @@ namespace EventLogReader
         public object AccessMask;
         public string ProcessName;
         public DateTime TimeGenerated;
+        public bool Stat;
     };
 
  

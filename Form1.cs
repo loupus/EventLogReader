@@ -25,6 +25,7 @@ namespace EventLogReader
         }    
         private void Form1_Load(object sender, EventArgs e)
         {
+           
             Prepare();
         }
 
@@ -40,6 +41,7 @@ namespace EventLogReader
 
             em.eOnEvet += Em_eOnEvet;
             em.eOnError += Em_eOnError;
+            em.eOnMessage += Em_eOnMessage;
 
             dtFs = new DataTable();
             dtFs.Columns.Add("Name", Type.GetType("System.String"));
@@ -68,7 +70,12 @@ namespace EventLogReader
             dtEs.Columns.Add("TimeGenerated", Type.GetType("System.DateTime"));
             gvEw.DataSource = dtEs;
 
+        
+        }
 
+        private void Em_eOnMessage(string arg)
+        {
+            AddLog(arg);
         }
 
         private void Em_eOnEvet(ewArgument arg)

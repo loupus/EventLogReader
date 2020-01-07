@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Windows.Forms;
 using System.Diagnostics.Eventing.Reader;
+using System.Timers;
 
 namespace EventLogReader
 {
@@ -16,8 +17,10 @@ namespace EventLogReader
     {
         public event EwEventHandler eOnEvet;
         public event FsErrorEventHandler eOnError;
+        public event FsMessageEventHandler eOnMessage;
         EventLogWatcher ewatch;
-        
+        DataAccess da;
+        System.Timers.Timer t1;
        
         public EventMonitor()
         {          
@@ -33,12 +36,16 @@ namespace EventLogReader
 
         public void Prepare()
         {
+            if (da == null)
+                da = new DataAccess();
+
             StringBuilder sb = new StringBuilder();
             sb.Append("<QueryList>");
             sb.Append(@"<Query Id=""0"">");
             sb.Append(@"<Select Path=""Security"">");
             sb.Append(@"*[System[(EventID=4663 or EventID=5145 or EventID=5140 or EventID=4660)");
-            sb.Append(@" and TimeCreated[@SystemTime &gt;= '" + DateTime.Now.AddMinutes(-1).ToUniversalTime().ToString("o") + "']]]");
+            sb.Append(@"]]");
+          //  sb.Append(@" and TimeCreated[@SystemTime &gt;= '" + DateTime.Now.AddMinutes(-1).ToUniversalTime().ToString("o") + "']]]");
             //  sb.Append(@" and *[EventData[Data[@Name =""ObjectName""] and (Data ='" + arg.Fullname + "')]]");
             sb.Append(@"</Select>");
             sb.Append(@"</Query>");
@@ -47,10 +54,9 @@ namespace EventLogReader
             EventLogQuery query = new EventLogQuery("Security", PathType.LogName, sb.ToString());
             ewatch = new EventLogWatcher(query);
             ewatch.EventRecordWritten += Ewatch_EventRecordWritten;
+
+            SetTimer();
         }
-
-
-
         public void StartMonitor()
         {
             if (ewatch == null)
@@ -58,6 +64,7 @@ namespace EventLogReader
             try
             {
                 ewatch.Enabled = true;
+                eOnMessage?.Invoke("EwWatcher started");
             }
             catch (Exception ex)
             {
@@ -69,8 +76,9 @@ namespace EventLogReader
         public void StopMonitor()
         {
             ewatch.Enabled = false;
+            t1.Enabled = false;
+            eOnMessage?.Invoke("EwWatcher stopped");
         }
-
 
         private void Ewatch_EventRecordWritten(object sender, EventRecordWrittenEventArgs e)
         {
@@ -174,8 +182,37 @@ namespace EventLogReader
             manager = null;
             xdoc = null;
 
+            Globals.AddEwArg(ew);
             eOnEvet?.Invoke(ew);
         }
-      
+
+        private void SetTimer()
+        {
+            // Create a timer with a two second interval.
+            t1 = new System.Timers.Timer(2000);
+            // Hook up the Elapsed event for the timer. 
+            t1.Elapsed += T1_Elapsed;
+            t1.AutoReset = true;
+            t1.Enabled = true;
+        }
+
+        private void T1_Elapsed(object sender, ElapsedEventArgs e)
+        {
+
+            eOnMessage?.Invoke("Timer loop");
+            if (Globals.EwArgs.Count>0)
+            {
+                OutPut tout = null;
+                lock (Globals._EwBufferLock)
+                {
+                    tout =  da.InsertEsValues(Globals.EwArgs);
+                    Globals.EwArgs.Clear();
+                }
+                if(tout.OutBool == false)
+                    eOnError?.Invoke(string.Format("EwWatcher Error: {0}", tout.OriginalStrErr));
+            }
+
+           
+        }
     }
 }

@@ -10,22 +10,22 @@ namespace EventLogReader
 {
     class fsWatcher
     {
-        string dirpath = "";
-        string user;
+        string dirpath = "";     
         FileSystemWatcher fsw;
+        DataAccess da;
+      
         public event FsMessageEventHandler eOnMessage;
         public event FsErrorEventHandler eOnError;
         public event FsEventHandler eOnEvet;
 
         public fsWatcher()
         {
-         
         }
 
         ~fsWatcher()
         {
             if (fsw != null)
-                fsw = null;
+                fsw = null;            
         }
 
         public bool SetDir(string pDirPath)
@@ -42,17 +42,20 @@ namespace EventLogReader
         {
             PrepareWatcher();
             fsw.EnableRaisingEvents = true;
-            eOnMessage?.Invoke("Watcher started");
+            eOnMessage?.Invoke("FsWatcher started");
         }
 
         public void Stop()
         {
             fsw.EnableRaisingEvents = false;
-            eOnMessage?.Invoke("Watcher stopped");
+            eOnMessage?.Invoke("FsWatcher stopped");
         }
 
         void PrepareWatcher()
         {
+            if (da == null)
+                da = new DataAccess();
+
             if (fsw == null)
             {
                 fsw = new FileSystemWatcher(dirpath);
@@ -76,21 +79,11 @@ namespace EventLogReader
 
         private void Fsw_Error(object sender, ErrorEventArgs e)
         {
-           // Console.ForegroundColor = ConsoleColor.Red;
-           // Console.WriteLine("Sender:" + sender.ToString() + "-" + e.GetException().Message );
             eOnError?.Invoke(string.Format("FsWatcher Error: {0}", e.GetException().Message));
         }
 
         private void Fsw_Renamed(object sender, RenamedEventArgs e)
         {
-            //Console.ForegroundColor = ConsoleColor.Blue;
-            //Console.WriteLine("User:" + sender.ToString());
-            //Console.WriteLine("ChangeType:" + Enum.GetName(e.ChangeType.GetType(), e.ChangeType));
-            //Console.WriteLine("Name:" + e.Name);
-            //Console.WriteLine("FullPath:" + e.FullPath);
-            //Console.WriteLine("OldName:" + e.OldName);
-            //Console.WriteLine("OldFullPath:" + e.OldFullPath);
-
             fsArgument farg = new fsArgument();
             farg.ChangeType = (int)e.ChangeType;
             farg.Name = e.Name;
@@ -98,57 +91,46 @@ namespace EventLogReader
             farg.OldName = e.OldName;
             farg.OldFullName = e.OldFullPath;
             farg.WhenHappened = DateTime.Now;
+            Globals.AddFsArg(farg);
             eOnEvet?.Invoke(farg);
+            da.InsertFsValue(farg);
         }
 
         private void Fsw_Deleted(object sender, FileSystemEventArgs e)
         {
-            //Console.ForegroundColor = ConsoleColor.Magenta;
-            //Console.WriteLine("User:" + sender.ToString());
-            //Console.WriteLine("ChangeType:" + Enum.GetName(e.ChangeType.GetType(), e.ChangeType));
-            //Console.WriteLine("Name:" + e.Name);
-            //Console.WriteLine("FullPath:" + e.FullPath);
-
             fsArgument farg = new fsArgument();
             farg.ChangeType = (int)e.ChangeType;
             farg.Name = e.Name;
             farg.FullName = e.FullPath;
             farg.WhenHappened = DateTime.Now;
+            Globals.AddFsArg(farg);
             eOnEvet?.Invoke(farg);
+            da.InsertFsValue(farg);
         }
 
         private void Fsw_Created(object sender, FileSystemEventArgs e)
         {
-            //Console.ForegroundColor = ConsoleColor.White;
-            //user = System.IO.File.GetAccessControl(e.FullPath).GetOwner(typeof(System.Security.Principal.NTAccount)).ToString();
-            //Console.WriteLine("User:" + user);
-            //Console.WriteLine("ChangeType:" + Enum.GetName(e.ChangeType.GetType(), e.ChangeType));
-            //Console.WriteLine("Name:" + e.Name);
-            //Console.WriteLine("FullPath:" + e.FullPath);
-
             fsArgument farg = new fsArgument();
             farg.ChangeType = (int)e.ChangeType;
             farg.Name = e.Name;
             farg.FullName = e.FullPath;
             farg.WhenHappened = DateTime.Now;
+            Globals.AddFsArg(farg);
             eOnEvet?.Invoke(farg);
+            da.InsertFsValue(farg);
 
         }
 
         private void Fsw_Changed(object sender, FileSystemEventArgs e)
         {
-            //Console.ForegroundColor = ConsoleColor.Green;
-            //Console.WriteLine("User:" + sender.ToString());
-            //Console.WriteLine("ChangeType:" + Enum.GetName(e.ChangeType.GetType(), e.ChangeType));
-            //Console.WriteLine("Name:" + e.Name);
-            //Console.WriteLine("FullPath:" + e.FullPath);
-
             fsArgument farg = new fsArgument();
             farg.ChangeType = (int)e.ChangeType;
             farg.Name = e.Name;
             farg.FullName = e.FullPath;
             farg.WhenHappened = DateTime.Now;
+            Globals.AddFsArg(farg);
             eOnEvet?.Invoke(farg);
+            da.InsertFsValue(farg);
         }
     }
 }

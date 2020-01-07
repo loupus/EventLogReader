@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
+using System.Reflection;
+using System.ComponentModel;
 
 namespace EventLogReader
 {
@@ -34,15 +36,15 @@ namespace EventLogReader
     {
         SqlConnection con;
         SqlCommand cmd;
-        String strCon;
+        string strCon;
 
-        public SqlWorker(String ConString) //default constructor
+        public SqlWorker(string ConString) //default constructor
         {
             strCon = ConString;
             cmd = new SqlCommand();
 
         }
-        public SqlWorker(String ConString, Boolean a) //default constructor
+        public SqlWorker(string ConString, bool a) //default constructor
         {
             strCon = ConString;
             cmd = new SqlCommand();
@@ -83,10 +85,14 @@ namespace EventLogReader
             return back;
 
         }
-        public OutPut _Sorgusuz(string sp, CommandType ct)
+        public OutPut _Sorgusuz(string sp, CommandType ct, SqlConnection pcon = null)
         {
             OutPut back = new OutPut(null, "", "", false);
-            con = new SqlConnection(strCon);
+            if(pcon!= null)
+                con = pcon;
+            else
+                con = new SqlConnection(strCon);
+
             cmd.Connection = con;
             cmd.CommandType = ct;
             cmd.CommandText = sp;
@@ -106,7 +112,8 @@ namespace EventLogReader
                 return back;
             }
 
-            if (con.State != ConnectionState.Closed) con.Close();
+            if(pcon == null)
+             if (con.State != ConnectionState.Closed) con.Close();
 
             return back;
 
@@ -139,11 +146,39 @@ namespace EventLogReader
 
             return back;
         }
+        public OutPut _BulkInsert(string tblname, DataTable dt)
+        {
+            OutPut back = new OutPut(null, "", "", false);
+            con = new SqlConnection(strCon);
+            SqlBulkCopy bulkcpy = new SqlBulkCopy(con);
+            bulkcpy.DestinationTableName = tblname;
+
+           
+            try
+            {
+                con.Open();
+                bulkcpy.WriteToServer(dt);
+                back.OutBool = true;
+
+            }
+            catch (SqlException ex)
+            {
+                back.OutStrErr = "Failed to Run BulkInsert";
+                back.OriginalStrErr = ex.Message;
+                if (con.State != ConnectionState.Closed) con.Close();
+                return back;
+            }
+
+            if (con.State != ConnectionState.Closed) con.Close();
+            if (bulkcpy != null) bulkcpy = null;
+            return back;
+
+        }
         public void _ResetParameters()
         {
             cmd.Parameters.Clear();
         }
-        public void _AddParameter(String name, Object value, Boolean ResetParameters = false)
+        public void _AddParameter(string name, object value, bool ResetParameters = false)
         {
             if (ResetParameters) { cmd.Parameters.Clear(); }
             cmd.Parameters.AddWithValue(name, value == null ? DBNull.Value : value);
@@ -174,7 +209,64 @@ namespace EventLogReader
             if (cmd != null) cmd.Dispose();
         }
     };
-    class DataAccess
+
+    public class DataAccess
     {
+        SqlWorker sq;
+        public DataAccess()
+        {
+            if(string.IsNullOrEmpty(Globals.ConnectionString))
+                Globals.SetSqlConStr();
+            sq = new SqlWorker(Globals.ConnectionString);
+        }
+
+        ~DataAccess()
+        {
+            sq = null;
+        }
+
+        public OutPut InsertFsValue(fsArgument parg)
+        {
+            OutPut back = null;
+            sq._AddParameter("@pWhenHappened", parg.WhenHappened, true);
+            sq._AddParameter("@pName",parg.Name);
+            sq._AddParameter("@pFullName", parg.FullName);
+            sq._AddParameter("@pOldName", parg.OldName);
+            sq._AddParameter("@pOldFullName", parg.OldFullName);
+            sq._AddParameter("@pChangeType", parg.ChangeType);
+            sq._AddParameter("@pUserName", parg.User);
+            sq._AddParameter("@pSourceIp", parg.SourceIp);
+            sq._AddParameter("@pStat", parg.Stat);
+            back = sq._Sorgusuz("SaveFsValue", CommandType.StoredProcedure);
+            return back;
+        }
+
+        public OutPut InsertEsValues(List<ewArgument> pList)
+        {
+            OutPut back = null;
+            DataTable dt = ConvertToDataTable(pList);
+            back = sq._BulkInsert("eWatcher", dt);
+            dt.Clear();
+            dt = null;
+            return back;
+        }
+
+         DataTable ConvertToDataTable<T>(IList<T> data)
+        {
+            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
+            DataTable table = new DataTable();
+            foreach (PropertyDescriptor prop in properties)
+                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+            foreach (T item in data)
+            {
+                DataRow row = table.NewRow();
+                foreach (PropertyDescriptor prop in properties)
+                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
+                table.Rows.Add(row);
+            }
+            return table;
+
+        }
     }
+
 }
