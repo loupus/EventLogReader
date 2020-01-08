@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace EventLogReader
 {
@@ -36,7 +38,8 @@ namespace EventLogReader
         }
 
         static List<fsArgument> FsArgs = new List<fsArgument>();
-       public static List<ewArgument> EwArgs = new List<ewArgument>();
+        public static List<ewArgument> EwArgs = new List<ewArgument>();
+        
 
         public static void AddFsArg(fsArgument parg)
         {
@@ -47,6 +50,16 @@ namespace EventLogReader
             }
         }
 
+        public static fsArgument GetFirstFs()
+        {
+            fsArgument back = null;
+            lock (_FsBufferLock)
+            {
+                back = FsArgs.FirstOrDefault();
+            }
+            return back;
+        }
+
         public static void AddEwArg(ewArgument parg)
         {
             if (parg == null) return;
@@ -55,6 +68,17 @@ namespace EventLogReader
                 EwArgs.Add(parg);
             }
         }
+
+        public static ewArgument GetFirstEw()
+        {
+            ewArgument back = null;
+            lock (_EwBufferLock)
+            {
+                back = EwArgs.FirstOrDefault();
+            }
+            return back;
+        }
+
 
         public static int[] EventIds =
         {
@@ -79,7 +103,7 @@ namespace EventLogReader
         public string User;
         public string SourceIp;
         public DateTime WhenHappened;
-        public bool Stat;
+        public int Stat;
     };
 
     public class ewArgument
@@ -92,15 +116,40 @@ namespace EventLogReader
         public string DomainName;
         public string IpAddress;
         public string ObjectName;
-        public object HandleID;
-        public object AccessList;
-        public object AccessMask;
+        public string HandleID;
+        public string AccessList;
+        public string AccessMask;
         public string ProcessName;
         public DateTime TimeGenerated;
-        public bool Stat;
+        public int Stat;
     };
 
- 
+    public class EwTable :DataTable
+    {
+        public EwTable()
+        {
+            Columns.Add("EventID", Type.GetType("System.Int32"));
+            Columns.Add("RecordID", Type.GetType("System.Int64"));
+            Columns.Add("MachineName", Type.GetType("System.String"));
+            Columns.Add("Name", Type.GetType("System.String"));
+            Columns.Add("UserName", Type.GetType("System.String"));
+            Columns.Add("DomainName", Type.GetType("System.String"));
+            Columns.Add("IpAddress", Type.GetType("System.String"));
+            Columns.Add("ObjectName", Type.GetType("System.String"));
+            Columns.Add("HandleID", Type.GetType("System.String"));
+            Columns.Add("AccessList", Type.GetType("System.String"));
+            Columns.Add("AccessMask", Type.GetType("System.String"));
+            Columns.Add("ProcessName", Type.GetType("System.String"));
+            Columns.Add("TimeGenerated", Type.GetType("System.DateTime"));
+            Columns.Add("Stat", Type.GetType("System.Boolean"));
+        }
+
+        ~EwTable()
+        {
+            Rows.Clear();
+            Columns.Clear();
+        }
+    }
     
     
 }

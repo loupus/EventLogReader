@@ -98,7 +98,7 @@ namespace EventLogReader
 
         private void Fsw_Deleted(object sender, FileSystemEventArgs e)
         {
-            fsArgument farg = new fsArgument();
+            fsArgument farg = new fsArgument();       
             farg.ChangeType = (int)e.ChangeType;
             farg.Name = e.Name;
             farg.FullName = e.FullPath;

@@ -241,6 +241,27 @@ namespace EventLogReader
             return back;
         }
 
+        public OutPut InsertEwValue(ewArgument parg)
+        {
+            OutPut back = null;
+            sq._AddParameter("@pEventID", parg.EventID, true);
+            sq._AddParameter("@pRecordID", parg.RecordID);
+            sq._AddParameter("@pMachineName", parg.MachineName);
+            sq._AddParameter("@pName", parg.Name);
+            sq._AddParameter("@pUserName ", parg.UserName);
+            sq._AddParameter("@pDomainName", parg.DomainName);
+            sq._AddParameter("@pIpAddress", parg.IpAddress);
+            sq._AddParameter("@pObjectName", parg.ObjectName);
+            sq._AddParameter("@pHandleID", parg.HandleID);
+            sq._AddParameter("@pAccessList", parg.AccessList);
+            sq._AddParameter("@pAccessMask", parg.AccessMask);
+            sq._AddParameter("@pProcessName", parg.ProcessName);
+            sq._AddParameter("@pTimeGenerated", parg.TimeGenerated);
+            sq._AddParameter("@pStat", parg.Stat);
+            back = sq._Sorgusuz("SaveEwValue", CommandType.StoredProcedure);
+            return back;
+        }
+
         public OutPut InsertEsValues(List<ewArgument> pList)
         {
             OutPut back = null;
@@ -250,22 +271,30 @@ namespace EventLogReader
             dt = null;
             return back;
         }
-
-         DataTable ConvertToDataTable<T>(IList<T> data)
+        
+        DataTable ConvertToDataTable(List<ewArgument> data)
         {
-            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
-            DataTable table = new DataTable();
-            foreach (PropertyDescriptor prop in properties)
-                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-            foreach (T item in data)
+            EwTable etbl = new EwTable();
+            foreach (ewArgument arg in data)
             {
-                DataRow row = table.NewRow();
-                foreach (PropertyDescriptor prop in properties)
-                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
-                table.Rows.Add(row);
+                DataRow dw = etbl.NewRow();
+                dw["RecordID"] = arg.RecordID;
+                dw["EventID"] = arg.EventID;             
+                dw["MachineName"] = arg.MachineName;
+                dw["Name"] = arg.Name;
+                dw["UserName"] = arg.UserName;
+                dw["DomainName"] = arg.DomainName;
+                dw["IpAddress"] = arg.IpAddress;
+                dw["ObjectName"] = arg.ObjectName;
+                dw["HandleID"] = arg.HandleID;
+                dw["AccessList"] = arg.AccessList;
+                dw["AccessMask"] = arg.AccessMask;
+                dw["ProcessName"] = arg.ProcessName;
+                dw["TimeGenerated"] = arg.TimeGenerated;
+                dw["Stat"] = arg.Stat;
+                etbl.Rows.Add(dw);
             }
-            return table;
-
+            return etbl;
         }
     }
 

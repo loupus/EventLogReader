@@ -55,7 +55,7 @@ namespace EventLogReader
             ewatch = new EventLogWatcher(query);
             ewatch.EventRecordWritten += Ewatch_EventRecordWritten;
 
-            SetTimer();
+           // SetTimer();
         }
         public void StartMonitor()
         {
@@ -76,7 +76,7 @@ namespace EventLogReader
         public void StopMonitor()
         {
             ewatch.Enabled = false;
-            t1.Enabled = false;
+         //   t1.Enabled = false;
             eOnMessage?.Invoke("EwWatcher stopped");
         }
 
@@ -91,7 +91,7 @@ namespace EventLogReader
         {
             ewArgument ew = new ewArgument();
             ew.MachineName = er.MachineName;
-            ew.Name = er.LogName;
+            ew.Name = er.ProviderName;   // todo ??          
             ew.EventID = er.Id;
             ew.RecordID = er.RecordId == null ? 0 : (long)er.RecordId;
             ew.TimeGenerated = er.TimeCreated == null ? DateTime.MinValue : (DateTime) er.TimeCreated;
@@ -184,6 +184,7 @@ namespace EventLogReader
 
             Globals.AddEwArg(ew);
             eOnEvet?.Invoke(ew);
+            da.InsertEwValue(ew);
         }
 
         private void SetTimer()
@@ -199,18 +200,18 @@ namespace EventLogReader
         private void T1_Elapsed(object sender, ElapsedEventArgs e)
         {
 
-            eOnMessage?.Invoke("Timer loop");
-            if (Globals.EwArgs.Count>0)
-            {
-                OutPut tout = null;
-                lock (Globals._EwBufferLock)
-                {
-                    tout =  da.InsertEsValues(Globals.EwArgs);
-                    Globals.EwArgs.Clear();
-                }
-                if(tout.OutBool == false)
-                    eOnError?.Invoke(string.Format("EwWatcher Error: {0}", tout.OriginalStrErr));
-            }
+            ////eOnMessage?.Invoke("Timer loop");
+            //if (Globals.EwArgs.Count>0)
+            //{
+            //    OutPut tout = null;
+            //    lock (Globals._EwBufferLock)
+            //    {
+            //        tout =  da.InsertEsValues(Globals.EwArgs);
+            //        Globals.EwArgs.Clear();
+            //    }
+            //    if(tout.OutBool == false)
+            //        eOnError?.Invoke(string.Format("EwWatcher Error: {0}", tout.OriginalStrErr));
+            //}
 
            
         }
