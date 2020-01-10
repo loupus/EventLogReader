@@ -2,53 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 
 namespace EventLogReader
 {
     public class Matcher
     {
-        DateTime LastEvent;
-        TimeSpan offset; // fsWatcher ile EventWatcher timing arası
-        System.Timers.Timer t1;
-        DataAccess da;
-        Thread thMatch;
-        static volatile bool OutFlag;
         public Matcher()
         {
-            LastEvent = new DateTime();
-            da = new DataAccess();
-            offset = new TimeSpan(0, 0, 0, 1, 0);
-            t1 = new System.Timers.Timer();
-            t1.Elapsed += T1_Elapsed;
-            t1.Interval = 10000;
-            t1.AutoReset = true;
-            OutFlag = false;
-        }
 
-        private void T1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            
         }
 
         ~Matcher()
         {
-            da = null;
-            t1.Enabled = false;
-            t1 = null;
-        }
 
-        public void Start()
-        {
-            StartThread();
-            t1.Enabled = true;
-        }
-
-        public void Stop()
-        {
-            StopThread();
-            t1.Enabled = false;
         }
 
         /*
@@ -136,90 +104,24 @@ S: = SACL Entries.
 
          */
 
-
-        void StartThread()
+        void Match()
         {
-            StopThread();
-            thMatch = new Thread(new ThreadStart(Match));
-            thMatch.Start();
-        }
-
-        void StopThread()
-        {
-            if(thMatch != null)
-            {
-                OutFlag = true;
-                thMatch.Join();
-                thMatch = null;
-            }
-        }
-
-        public void Match()
-        {
+            fsArgument temp = Globals.GetFirstFs();
             List<ewArgument> tempList = null;
-            TimeSpan waitTime = new TimeSpan(0, 0, 1);
-            while (true)
+            if (temp == null) return;
+
+            // delete match
+            if(temp.ChangeType == (int)WatcherChangeTypes.Deleted)
             {
-                fsArgument temp = Globals.GetFirstFs();             
-                if (temp == null) return;
+                tempList = Globals.EwArgs.FindAll(x => x.EventID == 4660 || x.EventID == 5145);
 
-                // delete match
-                if (temp.ChangeType == (int)WatcherChangeTypes.Deleted)
+                foreach(ewArgument e in tempList)
                 {
-                    tempList = Globals.EwArgs.FindAll(x => x.EventID == 4660 || x.EventID == 5145);
-
-                    foreach (ewArgument e in tempList)
-                    {
-                        if (e.EventID == 5145 && e.AccessList.Contains("%%1537") && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
-                        {
-                            if (temp.Name == e.RelativeTargetName)
-                            {
-                                temp.SourceIp = e.IpAddress;
-                                temp.User = e.DomainName + @"\" + e.UserName;
-                                temp.Stat = 1;
-                                da.SaveFsValue(temp);
-                                LastEvent = e.TimeGenerated;
-                                break;
-                            }
-                        }
-                        if (e.EventID == 4660 && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
-                        {
-                            if (temp.Name == e.ObjectName)
-                            {
-                                temp.SourceIp = "127.0.0.1";
-                                temp.User = e.DomainName + @"\" + e.UserName;
-                                temp.Stat = 1;
-                                da.SaveFsValue(temp);
-                                LastEvent = e.TimeGenerated;
-                                break;
-                            }
-                        }
-                    }
-
+                  // if()
                 }
 
-                tempList.Clear();
-                Thread.Sleep(waitTime);
-                if (OutFlag)
-                    break;
-
-                
             }
            
-           
-        }
-
-        bool GetOffsetTimeDifference(DateTime dt1, DateTime dt2)
-        {
-            TimeSpan fark;
-            if (dt1 < dt2)
-                fark = dt2 - dt1;
-            else
-                fark = dt1 - dt2;
-            if (offset < fark)
-                return true;
-            else
-                return false;
         }
     }
 }

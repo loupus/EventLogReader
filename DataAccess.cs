@@ -225,11 +225,10 @@ namespace EventLogReader
             sq = null;
         }
 
-        public OutPut SaveFsValue(fsArgument parg)
+        public OutPut InsertFsValue(fsArgument parg)
         {
             OutPut back = null;
-            sq._AddParameter("@pID", parg.ID, true);
-            sq._AddParameter("@pWhenHappened", parg.WhenHappened);
+            sq._AddParameter("@pWhenHappened", parg.WhenHappened, true);
             sq._AddParameter("@pName",parg.Name);
             sq._AddParameter("@pFullName", parg.FullName);
             sq._AddParameter("@pOldName", parg.OldName);
@@ -247,15 +246,12 @@ namespace EventLogReader
             OutPut back = null;
             sq._AddParameter("@pEventID", parg.EventID, true);
             sq._AddParameter("@pRecordID", parg.RecordID);
-            sq._AddParameter("@pActivityID", parg.ActivityID);
-            sq._AddParameter("@pRelatedActivityID", parg.RelatedActivityID);
             sq._AddParameter("@pMachineName", parg.MachineName);
             sq._AddParameter("@pName", parg.Name);
             sq._AddParameter("@pUserName ", parg.UserName);
             sq._AddParameter("@pDomainName", parg.DomainName);
             sq._AddParameter("@pIpAddress", parg.IpAddress);
             sq._AddParameter("@pObjectName", parg.ObjectName);
-            sq._AddParameter("@pRelativeTargetName", parg.RelativeTargetName);
             sq._AddParameter("@pHandleID", parg.HandleID);
             sq._AddParameter("@pAccessList", parg.AccessList);
             sq._AddParameter("@pAccessMask", parg.AccessMask);
