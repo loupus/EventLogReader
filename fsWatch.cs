@@ -93,7 +93,7 @@ namespace EventLogReader
             farg.WhenHappened = DateTime.Now;
             Globals.AddFsArg(farg);
             eOnEvet?.Invoke(farg);
-            da.InsertFsValue(farg);
+            da.SaveFsValue(farg);
         }
 
         private void Fsw_Deleted(object sender, FileSystemEventArgs e)
@@ -105,7 +105,7 @@ namespace EventLogReader
             farg.WhenHappened = DateTime.Now;
             Globals.AddFsArg(farg);
             eOnEvet?.Invoke(farg);
-            da.InsertFsValue(farg);
+            da.SaveFsValue(farg);
         }
 
         private void Fsw_Created(object sender, FileSystemEventArgs e)
@@ -117,7 +117,7 @@ namespace EventLogReader
             farg.WhenHappened = DateTime.Now;
             Globals.AddFsArg(farg);
             eOnEvet?.Invoke(farg);
-            da.InsertFsValue(farg);
+            da.SaveFsValue(farg);
 
         }
 
@@ -130,7 +130,7 @@ namespace EventLogReader
             farg.WhenHappened = DateTime.Now;
             Globals.AddFsArg(farg);
             eOnEvet?.Invoke(farg);
-            da.InsertFsValue(farg);
+            da.SaveFsValue(farg);
         }
     }
 }

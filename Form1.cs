@@ -17,6 +17,7 @@ namespace EventLogReader
         EventMonitor em;
         DataTable dtFs;
         DataTable dtEs;
+        Matcher match;
         
         public Form1()
         {
@@ -33,6 +34,7 @@ namespace EventLogReader
         {
             fs = new fsWatcher();
             em = new EventMonitor();
+            match = new Matcher();
 
             fs.SetDir(@"C:\Users\hakansoyalp\Desktop\watch\");
             fs.eOnError += Fs_eOnError;
@@ -43,31 +45,11 @@ namespace EventLogReader
             em.eOnError += Em_eOnError;
             em.eOnMessage += Em_eOnMessage;
 
-            dtFs = new DataTable();
-            dtFs.Columns.Add("Name", Type.GetType("System.String"));
-            dtFs.Columns.Add("Fullname", Type.GetType("System.String"));
-            dtFs.Columns.Add("Oldname", Type.GetType("System.String"));
-            dtFs.Columns.Add("OldFullname", Type.GetType("System.String"));
-            dtFs.Columns.Add("ChangeType", Type.GetType("System.Int32"));
-            dtFs.Columns.Add("User", Type.GetType("System.String"));
-            dtFs.Columns.Add("SourceIp", Type.GetType("System.String"));
-            dtFs.Columns.Add("WhenHappened", Type.GetType("System.DateTime"));
+            dtFs = new FsTable();
+          
             gvFw.DataSource = dtFs;
 
-            dtEs = new DataTable();
-            dtEs.Columns.Add("EventID", Type.GetType("System.Int32"));
-            dtEs.Columns.Add("RecordID", Type.GetType("System.Int64"));
-            dtEs.Columns.Add("MachineName", Type.GetType("System.String"));
-            dtEs.Columns.Add("Name", Type.GetType("System.String"));
-            dtEs.Columns.Add("UserName", Type.GetType("System.String"));
-            dtEs.Columns.Add("DomainName", Type.GetType("System.String"));
-            dtEs.Columns.Add("IpAddress", Type.GetType("System.String"));
-            dtEs.Columns.Add("ObjectName", Type.GetType("System.String"));
-            dtEs.Columns.Add("HandleID", Type.GetType("System.String"));
-            dtEs.Columns.Add("AccessList", Type.GetType("System.String"));
-            dtEs.Columns.Add("AccessMask", Type.GetType("System.String"));
-            dtEs.Columns.Add("ProcessName", Type.GetType("System.String"));
-            dtEs.Columns.Add("TimeGenerated", Type.GetType("System.DateTime"));
+            dtEs = new EwTable();           
             gvEw.DataSource = dtEs;
 
         
@@ -92,9 +74,7 @@ namespace EventLogReader
         }
         private void Fs_eOnEvet(fsArgument arg)
         {
-            AddFsArg(arg);
-
-
+            AddFsArg(arg);              
         }
 
         private void Fs_eOnError(string arg)
@@ -125,6 +105,7 @@ namespace EventLogReader
             else
             {
                 DataRow dw = dtFs.NewRow();
+                dw["ID"] = arg.ID;
                 dw["Name"] = arg.Name;
                 dw["Fullname"] = arg.FullName;
                 dw["Oldname"] = arg.OldName;
@@ -152,6 +133,7 @@ namespace EventLogReader
                 DataRow dw = dtEs.NewRow();
                 dw["EventID"] = arg.EventID;
                 dw["RecordID"] = arg.RecordID;
+                dw["ActivityID"] = arg.ActivityID;
                 dw["MachineName"] = arg.MachineName;
                 dw["Name"] = arg.Name;
                 dw["UserName"] = arg.UserName;
@@ -172,12 +154,14 @@ namespace EventLogReader
         {
             fs.Start();
             em.StartMonitor();
+          //  match.Start();
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
             fs.Stop();
             em.StopMonitor();
+            match.Stop();
         }
     }
 }

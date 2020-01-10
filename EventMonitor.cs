@@ -95,6 +95,9 @@ namespace EventLogReader
             ew.EventID = er.Id;
             ew.RecordID = er.RecordId == null ? 0 : (long)er.RecordId;
             ew.TimeGenerated = er.TimeCreated == null ? DateTime.MinValue : (DateTime) er.TimeCreated;
+            ew.ActivityID = er.ActivityId.ToString();
+            ew.RelatedActivityID = er.RelatedActivityId.ToString();
+            er.
 
             string[] xpaths =
             {
@@ -107,6 +110,7 @@ namespace EventLogReader
                 ,"/bk:Event/bk:EventData/bk:Data[@Name='AccessMask']"
                 ,"/bk:Event/bk:EventData/bk:Data[@Name='ProcessName']"
                 ,"/bk:Event/bk:EventData/bk:Data[@Name='IpAddress']"
+                ,"/bk:Event/bk:EventData/bk:Data[@Name='RelativeTargetName']"
 
                 //"/Event/EventData/Data[@Name = 'ObjectName']"
                 //,"//Event/EventData/Data/@Name=SubjectUserName"
@@ -170,6 +174,11 @@ namespace EventLogReader
                 {
                     ew.IpAddress = tnode.InnerText;
                 }
+                tnode = xdoc.SelectSingleNode(xpaths[8], manager);
+                if (tnode != null)
+                {
+                    ew.RelativeTargetName = tnode.InnerText;
+                }
 
             }
             catch (Exception ex)
@@ -184,7 +193,9 @@ namespace EventLogReader
 
             Globals.AddEwArg(ew);
             eOnEvet?.Invoke(ew);
-            da.InsertEwValue(ew);
+           OutPut tout =  da.InsertEwValue(ew);
+            if(!tout.OutBool)
+                eOnError?.Invoke(string.Format("EwWatcher Error: {0}", tout.OriginalStrErr));
         }
 
         private void SetTimer()
