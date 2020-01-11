@@ -45,6 +45,10 @@ namespace EventLogReader
             em.eOnError += Em_eOnError;
             em.eOnMessage += Em_eOnMessage;
 
+            match.eOnError += Match_eOnError;
+            match.eOnMessage += Match_eOnMessage;
+            match.eOnEvet += Match_eOnEvet;
+
             dtFs = new FsTable();
           
             gvFw.DataSource = dtFs;
@@ -55,6 +59,22 @@ namespace EventLogReader
         
         }
 
+        private void Match_eOnEvet(fsArgument arg)
+        {
+           // AddFsArg(arg);
+        }
+
+        private void Match_eOnMessage(string arg)
+        {
+            AddLog(arg);
+        }
+
+
+        private void Match_eOnError(string arg)
+        {
+            AddLog(arg);
+        }
+
         private void Em_eOnMessage(string arg)
         {
             AddLog(arg);
@@ -63,6 +83,7 @@ namespace EventLogReader
         private void Em_eOnEvet(ewArgument arg)
         {
             AddEwArg(arg);
+           // Task.Run(() => AddEwArg(arg));
         }
         private void Em_eOnError(string arg)
         {
@@ -114,6 +135,7 @@ namespace EventLogReader
                 dw["User"] = arg.User;
                 dw["SourceIp"] = arg.SourceIp;
                 dw["WhenHappened"] = arg.WhenHappened;
+                dw["Stat"] = (int)arg.Stat;
                 dtFs.Rows.Add(dw);
                 dtFs.AcceptChanges();
                 gvFw.Refresh();
@@ -140,11 +162,13 @@ namespace EventLogReader
                 dw["IpAddress"] = arg.IpAddress;
                 dw["DomainName"] = arg.DomainName;
                 dw["ObjectName"] = arg.ObjectName;
+                dw["RelativeTargetName"] = arg.RelativeTargetName;
                 dw["HandleID"] = arg.HandleID;
                 dw["AccessList"] = arg.AccessList;
                 dw["AccessMask"] = arg.AccessMask;
                 dw["ProcessName"] = arg.ProcessName;
                 dw["TimeGenerated"] = arg.TimeGenerated;
+                dw["Stat"] = (int)arg.Stat;
                 dtEs.Rows.Add(dw);
                 dtEs.AcceptChanges();
                 gvEw.Refresh();
@@ -152,16 +176,24 @@ namespace EventLogReader
         }
         private void btnStart_Click(object sender, EventArgs e)
         {
+            btnStop.Enabled = false;
+            btnStart.Enabled = false;
             fs.Start();
             em.StartMonitor();
-          //  match.Start();
+            match.Start();
+            btnStop.Enabled = true;
+            btnStart.Enabled = true;
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
+            btnStop.Enabled = false;
+            btnStart.Enabled = false;
             fs.Stop();
             em.StopMonitor();
             match.Stop();
+            btnStop.Enabled = true;
+            btnStart.Enabled = true;
         }
     }
 }

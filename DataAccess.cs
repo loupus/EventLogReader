@@ -237,7 +237,7 @@ namespace EventLogReader
             sq._AddParameter("@pChangeType", parg.ChangeType);
             sq._AddParameter("@pUserName", parg.User);
             sq._AddParameter("@pSourceIp", parg.SourceIp);
-            sq._AddParameter("@pStat", parg.Stat);
+            sq._AddParameter("@pStat", (int)parg.Stat);
             back = sq._Sorgusuz("SaveFsValue", CommandType.StoredProcedure);
             return back;
         }
@@ -261,7 +261,7 @@ namespace EventLogReader
             sq._AddParameter("@pAccessMask", parg.AccessMask);
             sq._AddParameter("@pProcessName", parg.ProcessName);
             sq._AddParameter("@pTimeGenerated", parg.TimeGenerated);
-            sq._AddParameter("@pStat", parg.Stat);
+            sq._AddParameter("@pStat", (int)parg.Stat);
             back = sq._Sorgusuz("SaveEwValue", CommandType.StoredProcedure);
             return back;
         }
@@ -295,7 +295,7 @@ namespace EventLogReader
                 dw["AccessMask"] = arg.AccessMask;
                 dw["ProcessName"] = arg.ProcessName;
                 dw["TimeGenerated"] = arg.TimeGenerated;
-                dw["Stat"] = arg.Stat;
+                dw["Stat"] = (int)arg.Stat;
                 etbl.Rows.Add(dw);
             }
             return etbl;

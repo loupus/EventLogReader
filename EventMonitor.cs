@@ -21,11 +21,12 @@ namespace EventLogReader
         EventLogWatcher ewatch;
         DataAccess da;
         System.Timers.Timer t1;
-       
+
         public EventMonitor()
-        {          
-          
-            
+        {
+           
+
+
         }
 
         ~EventMonitor()
@@ -36,6 +37,7 @@ namespace EventLogReader
 
         public void Prepare()
         {
+
             if (da == null)
                 da = new DataAccess();
 
@@ -59,6 +61,7 @@ namespace EventLogReader
         }
         public void StartMonitor()
         {
+         
             if (ewatch == null)
                 Prepare();
             try
@@ -68,23 +71,32 @@ namespace EventLogReader
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                eOnError?.Invoke(string.Format("EwWatcher Error: {0}", ex.Message));
+               
             }
         
         }
 
         public void StopMonitor()
         {
+          
             ewatch.Enabled = false;
-         //   t1.Enabled = false;
+            //   t1.Enabled = false;
             eOnMessage?.Invoke("EwWatcher stopped");
         }
 
         private void Ewatch_EventRecordWritten(object sender, EventRecordWrittenEventArgs e)
         {
+            // e.EventException.Message
+            if(e.EventException != null)
+                eOnError?.Invoke(string.Format("EwWatcher Error: {0}", e.EventException.Message));
 
-            EvalEventData(e.EventRecord);
-            //MessageBox.Show(e.EventRecord.ToXml());
+            //if (OutFlag)
+            //    ewatch.Enabled = false;
+            //   else
+            Task.Run(() => EvalEventData(e.EventRecord));
+            // EvalEventData(e.EventRecord);
+           
         }
 
         private void EvalEventData(EventRecord er)
@@ -97,7 +109,7 @@ namespace EventLogReader
             ew.TimeGenerated = er.TimeCreated == null ? DateTime.MinValue : (DateTime) er.TimeCreated;
             ew.ActivityID = er.ActivityId.ToString();
             ew.RelatedActivityID = er.RelatedActivityId.ToString();
-            er.
+          
 
             string[] xpaths =
             {
@@ -193,7 +205,7 @@ namespace EventLogReader
 
             Globals.AddEwArg(ew);
             eOnEvet?.Invoke(ew);
-           OutPut tout =  da.InsertEwValue(ew);
+            OutPut tout =  da.InsertEwValue(ew);            // todo * ya lock la ya da başka yerde senkronla
             if(!tout.OutBool)
                 eOnError?.Invoke(string.Format("EwWatcher Error: {0}", tout.OriginalStrErr));
         }
