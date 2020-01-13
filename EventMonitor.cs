@@ -107,8 +107,8 @@ namespace EventLogReader
             ew.EventID = er.Id;
             ew.RecordID = er.RecordId == null ? 0 : (long)er.RecordId;
             ew.TimeGenerated = er.TimeCreated == null ? DateTime.MinValue : (DateTime) er.TimeCreated;
-            ew.ActivityID = er.ActivityId.ToString();
-            ew.RelatedActivityID = er.RelatedActivityId.ToString();
+            //ew.ActivityID = er.ActivityId.ToString();
+            //ew.RelatedActivityID = er.RelatedActivityId.ToString();
           
 
             string[] xpaths =
@@ -205,9 +205,14 @@ namespace EventLogReader
 
             Globals.AddEwArg(ew);
             eOnEvet?.Invoke(ew);
-            OutPut tout =  da.InsertEwValue(ew);            // todo * ya lock la ya da başka yerde senkronla
-            if(!tout.OutBool)
-                eOnError?.Invoke(string.Format("EwWatcher Error: {0}", tout.OriginalStrErr));
+            lock (Globals._DBLock)
+            {
+                OutPut tout = da.InsertEwValue(ew);            // todo * ya lock la ya da başka yerde senkronla
+                if (!tout.OutBool)
+                    eOnError?.Invoke(string.Format("EwWatcher Error: {0}", tout.OriginalStrErr));
+            }
+        
+          
         }
 
         private void SetTimer()

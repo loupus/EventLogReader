@@ -17,12 +17,12 @@ namespace EventLogReader
         static volatile bool OutFlag;
         public event FsErrorEventHandler eOnError;
         public event FsMessageEventHandler eOnMessage;
-        public event FsEventHandler eOnEvet;
+        public event FsEventHandler eOnEvent;
         public Matcher()
         {
             LastEvent = new DateTime();
             da = new DataAccess();
-            offset = new TimeSpan(0, 0, 0, 1, 0);
+            offset = new TimeSpan(0, 0, 1, 0, 0);
             t1 = new System.Timers.Timer();
             t1.Elapsed += T1_Elapsed;
             t1.Interval = 10000;
@@ -162,20 +162,20 @@ S: = SACL Entries.
         public void Match()
         {
             List<ewArgument> tempList = null;
-            TimeSpan waitTime = new TimeSpan(0, 2, 0);
+            TimeSpan waitTime = new TimeSpan(0, 0, 2);
             while (true)
             {
-                eOnMessage?.Invoke("Match Loop");
+              //  eOnMessage?.Invoke("Match Loop");
                 fsArgument temp = Globals.GetNextFs();
                 if (temp != null)
                 {
-                    temp.Stat = FStat.OnInvestigation;
+                    temp.ScanCount++;
                     // delete match
                     if (temp.ChangeType == (int)WatcherChangeTypes.Deleted)
                     {
-                        eOnMessage?.Invoke("Match Scanning Delete" + temp.Name);
+                        eOnMessage?.Invoke("Match Scanning Delete: " + temp.Name);
                         tempList = Globals.EwArgs.FindAll(x => (x.EventID == 4660 || x.EventID == 5145) && x.Stat == FStat.None);
-
+                        eOnMessage?.Invoke("Event Log Count for Match: " + tempList.Count.ToString());
                         foreach (ewArgument e in tempList)
                         {
                             if ( e.EventID == 5145 && e.AccessList.Contains("%%1537") && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
@@ -183,9 +183,11 @@ S: = SACL Entries.
                                 if (temp.Name == e.RelativeTargetName)
                                 {
                                     eOnMessage?.Invoke("Match found");
-                                    e.Stat = FStat.Completed;
+                                
                                     temp.SourceIp = e.IpAddress;
-                                    temp.User = e.DomainName + @"\" + e.UserName;                                 
+                                    temp.User = e.DomainName + @"\" + e.UserName;
+                                    temp.Stat = FStat.Matched;
+                                    e.Stat = FStat.Matched;
                                     OutPut tout = da.SaveFsValue(temp);
                                     if (!tout.OutBool)
                                     {
@@ -195,7 +197,8 @@ S: = SACL Entries.
                                     else
                                     {
                                         temp.Stat = FStat.Completed;
-                                        eOnEvet?.Invoke(temp);
+                                        e.Stat = FStat.Completed;
+                                        eOnEvent?.Invoke(temp);
                                     }                                      
                                     LastEvent = e.TimeGenerated;
                                     break;
@@ -206,9 +209,10 @@ S: = SACL Entries.
                                 if (temp.Name == e.ObjectName)
                                 {
                                     eOnMessage?.Invoke("Match found");
-                                    e.Stat = FStat.Completed;
                                     temp.SourceIp = "127.0.0.1";
                                     temp.User = e.DomainName + @"\" + e.UserName;
+                                    temp.Stat = FStat.Matched;
+                                    e.Stat = FStat.Matched;
                                     OutPut tout = da.SaveFsValue(temp);
                                     if (!tout.OutBool)
                                     {
@@ -218,13 +222,14 @@ S: = SACL Entries.
                                     else
                                     {
                                         temp.Stat = FStat.Completed;
-                                        eOnEvet?.Invoke(temp);
+                                        e.Stat = FStat.Completed;
+                                        eOnEvent?.Invoke(temp);
                                     }
                                     LastEvent = e.TimeGenerated;
                                     break;
                                 }
                             }
-                            e.Stat = FStat.NotUsed;
+                         //   e.Stat = FStat.NotUsed;
                             if (OutFlag)
                                 break;
                         }

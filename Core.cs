@@ -8,10 +8,11 @@ namespace EventLogReader
     public enum FStat
     {
         None = 0
-       ,OnInvestigation = 1
+       //,OnInvestigation = 1
        ,Failed = 2
        ,NotUsed = 3
        ,NotFound = 4
+       ,Matched = 5
        ,Completed = 9
     }
     public class fsArgument
@@ -26,10 +27,12 @@ namespace EventLogReader
         public string SourceIp;
         public DateTime WhenHappened;
         public FStat Stat;
+        public int ScanCount;
         public fsArgument()
         {
             ID = Guid.NewGuid().ToString();
             Stat = FStat.None;
+            ScanCount = 0;
         }
     };
 
@@ -37,8 +40,8 @@ namespace EventLogReader
     {
         public int EventID;
         public long RecordID;
-        public string ActivityID;
-        public string RelatedActivityID;
+        //public string ActivityID;
+        //public string RelatedActivityID;
         public string MachineName;
         public string Name;
         public string UserName;
@@ -64,8 +67,8 @@ namespace EventLogReader
         {
             Columns.Add("EventID", Type.GetType("System.Int32"));
             Columns.Add("RecordID", Type.GetType("System.Int64"));
-            Columns.Add("ActivityID", Type.GetType("System.String"));
-            Columns.Add("RelatedActivityID", Type.GetType("System.String"));
+            //Columns.Add("ActivityID", Type.GetType("System.String"));
+            //Columns.Add("RelatedActivityID", Type.GetType("System.String"));
             Columns.Add("MachineName", Type.GetType("System.String"));
             Columns.Add("Name", Type.GetType("System.String"));
             Columns.Add("UserName", Type.GetType("System.String"));
@@ -101,7 +104,9 @@ namespace EventLogReader
             Columns.Add("User", Type.GetType("System.String"));
             Columns.Add("SourceIp", Type.GetType("System.String"));
             Columns.Add("WhenHappened", Type.GetType("System.DateTime"));
+            Columns.Add("ScanCount", Type.GetType("System.Int32"));
             Columns.Add("Stat", Type.GetType("System.Int32"));
+         
         }
         ~FsTable()
         {

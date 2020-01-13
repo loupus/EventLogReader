@@ -10,11 +10,13 @@ namespace EventLogReader
     public delegate void FsErrorEventHandler(string arg);
     public delegate void FsMessageEventHandler(string arg);
     public delegate void EwEventHandler(ewArgument arg);
+    public delegate void MUpdate();
 
     public static class Globals
     {
         public static readonly object _FsBufferLock = new object();
         public static readonly object _EwBufferLock = new object();
+        public static readonly object _DBLock = new object();
         public static string localPath = @"C:\Users\hakansoyalp\Desktop\watch\";
         public static string remotePath = @"C:\Users\hakansoyalp\Desktop\watch\";
 
@@ -55,7 +57,7 @@ namespace EventLogReader
             fsArgument back = null;
             lock (_FsBufferLock)
             {
-                back = FsArgs.FirstOrDefault(x => x.Stat == FStat.None || x.Stat == FStat.OnInvestigation);
+                back = FsArgs.OrderBy(s => s.ScanCount).FirstOrDefault(x => x.Stat == FStat.None);
             }
             return back;
         }

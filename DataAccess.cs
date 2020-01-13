@@ -225,10 +225,11 @@ namespace EventLogReader
             sq = null;
         }
 
-        public OutPut InsertFsValue(fsArgument parg)
+        public OutPut SaveFsValue(fsArgument parg)
         {
             OutPut back = null;
-            sq._AddParameter("@pWhenHappened", parg.WhenHappened, true);
+            sq._AddParameter("@pID", parg.ID, true);
+            sq._AddParameter("@pWhenHappened", parg.WhenHappened);
             sq._AddParameter("@pName",parg.Name);
             sq._AddParameter("@pFullName", parg.FullName);
             sq._AddParameter("@pOldName", parg.OldName);
@@ -252,6 +253,7 @@ namespace EventLogReader
             sq._AddParameter("@pDomainName", parg.DomainName);
             sq._AddParameter("@pIpAddress", parg.IpAddress);
             sq._AddParameter("@pObjectName", parg.ObjectName);
+            sq._AddParameter("@pRelativeTargetName", parg.RelativeTargetName);
             sq._AddParameter("@pHandleID", parg.HandleID);
             sq._AddParameter("@pAccessList", parg.AccessList);
             sq._AddParameter("@pAccessMask", parg.AccessMask);

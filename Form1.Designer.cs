@@ -59,6 +59,8 @@
             // 
             // gvEw
             // 
+            this.gvEw.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gvEw.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gvEw.Location = new System.Drawing.Point(42, 82);
             this.gvEw.Name = "gvEw";
@@ -67,6 +69,9 @@
             // 
             // gvFw
             // 
+            this.gvFw.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gvFw.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gvFw.Location = new System.Drawing.Point(42, 406);
             this.gvFw.Name = "gvFw";
@@ -94,6 +99,7 @@
             this.Controls.Add(this.btnStart);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.gvEw)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gvFw)).EndInit();

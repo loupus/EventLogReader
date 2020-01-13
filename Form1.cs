@@ -47,7 +47,8 @@ namespace EventLogReader
 
             match.eOnError += Match_eOnError;
             match.eOnMessage += Match_eOnMessage;
-            match.eOnEvet += Match_eOnEvet;
+            match.eOnEvent += Match_eOnEvent;
+           // match.eOnUpdate += Match_eOnUpdate;
 
             dtFs = new FsTable();
           
@@ -59,10 +60,25 @@ namespace EventLogReader
         
         }
 
-        private void Match_eOnEvet(fsArgument arg)
+        private void Match_eOnEvent(fsArgument arg)
         {
-           // AddFsArg(arg);
+            UpdateFsTable(arg);
         }
+
+        //private void Match_eOnUpdate()
+        //{
+        //    if (gvEw.InvokeRequired)
+        //    {
+        //        var d = new MUpdate(Match_eOnUpdate);
+        //        gvEw.Invoke(d, null);
+        //    }
+        //    else
+        //    {
+        //        dtEs.AcceptChanges();
+        //        gvEw.Refresh();
+        //    }
+        //}
+
 
         private void Match_eOnMessage(string arg)
         {
@@ -135,8 +151,44 @@ namespace EventLogReader
                 dw["User"] = arg.User;
                 dw["SourceIp"] = arg.SourceIp;
                 dw["WhenHappened"] = arg.WhenHappened;
-                dw["Stat"] = (int)arg.Stat;
+                dw["ScanCount"] = arg.ScanCount;
+                dw["Stat"] = (int)arg.Stat;              
                 dtFs.Rows.Add(dw);
+                dtFs.AcceptChanges();
+                gvFw.Refresh();
+            }
+        }
+
+
+        private void UpdateFsTable(fsArgument arg)
+        {
+            if (dtFs.Rows.Count == 0) return;
+            foreach(DataRow dw in dtFs.Rows)
+            {
+                if(dw["ID"].ToString() == arg.ID)
+                {
+                    dw["Name"] = arg.Name;
+                    dw["Fullname"] = arg.FullName;
+                    dw["Oldname"] = arg.OldName;
+                    dw["OldFullname"] = arg.OldFullName;
+                    dw["ChangeType"] = arg.ChangeType;
+                    dw["User"] = arg.User;
+                    dw["SourceIp"] = arg.SourceIp;
+                    dw["WhenHappened"] = arg.WhenHappened;
+                    dw["ScanCount"] = arg.ScanCount;
+                    dw["Stat"] = (int)arg.Stat;
+                    break;
+                }
+            }
+
+            if (gvFw.InvokeRequired)
+            {
+                var d = new FsEventHandler(UpdateFsTable);
+                gvFw.Invoke(d, new object[] { arg });
+            }
+            else
+            {
+                
                 dtFs.AcceptChanges();
                 gvFw.Refresh();
             }
@@ -155,7 +207,7 @@ namespace EventLogReader
                 DataRow dw = dtEs.NewRow();
                 dw["EventID"] = arg.EventID;
                 dw["RecordID"] = arg.RecordID;
-                dw["ActivityID"] = arg.ActivityID;
+                //dw["ActivityID"] = arg.ActivityID;
                 dw["MachineName"] = arg.MachineName;
                 dw["Name"] = arg.Name;
                 dw["UserName"] = arg.UserName;
@@ -194,6 +246,11 @@ namespace EventLogReader
             match.Stop();
             btnStop.Enabled = true;
             btnStart.Enabled = true;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }
