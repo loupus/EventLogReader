@@ -173,13 +173,14 @@ S: = SACL Entries.
                     // delete match
                     if (temp.ChangeType == (int)WatcherChangeTypes.Deleted)
                     {
-                        eOnMessage?.Invoke("Match Scanning Delete: " + temp.Name);
-                        tempList = Globals.EwArgs.FindAll(x => (x.EventID == 4660 || x.EventID == 5145) && x.Stat == FStat.None);
-                        eOnMessage?.Invoke("Event Log Count for Match: " + tempList.Count.ToString());
+                      
+                        tempList = Globals.EwArgs.FindAll(x => (x.EventID == 4663 || x.EventID == 5145) && x.Stat == FStat.None);
+                      //  eOnMessage?.Invoke("Event Log Count for Match: " + tempList.Count.ToString());
                         foreach (ewArgument e in tempList)
                         {
                             if ( e.EventID == 5145 && e.AccessList.Contains("%%1537") && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
                             {
+                                eOnMessage?.Invoke("Match Scanning Shared Delete: " + temp.Name);
                                 if (temp.Name == e.RelativeTargetName)
                                 {
                                     eOnMessage?.Invoke("Match found");
@@ -198,15 +199,16 @@ S: = SACL Entries.
                                     {
                                         temp.Stat = FStat.Completed;
                                         e.Stat = FStat.Completed;
-                                        eOnEvent?.Invoke(temp);
                                     }                                      
                                     LastEvent = e.TimeGenerated;
                                     break;
                                 }
                             }
-                            if (e.EventID == 4660 && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
+                            if (e.EventID == 4663 && e.AccessList.Contains("%%1537") && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
                             {
-                                if (temp.Name == e.ObjectName)
+                                eOnMessage?.Invoke("Match Scanning Delete: " + temp.Name);
+
+                                if (temp.FullName == e.ObjectName)
                                 {
                                     eOnMessage?.Invoke("Match found");
                                     temp.SourceIp = "127.0.0.1";
@@ -222,21 +224,61 @@ S: = SACL Entries.
                                     else
                                     {
                                         temp.Stat = FStat.Completed;
-                                        e.Stat = FStat.Completed;
-                                        eOnEvent?.Invoke(temp);
+                                        e.Stat = FStat.Completed;                                      
                                     }
                                     LastEvent = e.TimeGenerated;
                                     break;
                                 }
                             }
-                         //   e.Stat = FStat.NotUsed;
+                            //   e.Stat = FStat.NotUsed;
+                          
+                            if (OutFlag)
+                                break;
+                        }                    
+                    }
+
+                    if (temp.ChangeType == (int)WatcherChangeTypes.Created)
+                    {
+                        tempList = Globals.EwArgs.FindAll(x => x.EventID == 4663  && x.Stat == FStat.None && x.AccessList.Contains("WriteData"));
+                        foreach (ewArgument e in tempList)
+                        {
+                            if (GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
+                            {
+                                eOnMessage?.Invoke("Match Scanning Create: " + temp.Name);
+                                if (temp.Name == e.RelativeTargetName)
+                                {
+                                    eOnMessage?.Invoke("Match found");
+
+                                    temp.SourceIp = e.IpAddress;
+                                    temp.User = e.DomainName + @"\" + e.UserName;
+                                    temp.Stat = FStat.Matched;
+                                    e.Stat = FStat.Matched;
+                                    OutPut tout = da.SaveFsValue(temp);
+                                    if (!tout.OutBool)
+                                    {
+                                        eOnError?.Invoke(string.Format("Matcher Error: {0}", tout.OriginalStrErr));
+                                        temp.Stat = FStat.Failed;
+                                    }
+                                    else
+                                    {
+                                        temp.Stat = FStat.Completed;
+                                        e.Stat = FStat.Completed;
+                                    }
+                                    LastEvent = e.TimeGenerated;
+                                    break;
+                                }
+                            }
+                          
+
                             if (OutFlag)
                                 break;
                         }
-                        tempList.Clear();
                     }
-                  
-                   
+
+                        if (temp.ScanCount > 100)
+                        temp.Stat = FStat.Failed;
+                    eOnEvent?.Invoke(temp);
+                    tempList.Clear();
                 }
                 if (OutFlag)
                     break;

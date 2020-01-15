@@ -196,7 +196,6 @@ namespace EventLogReader
 
         private void AddEwArg(ewArgument arg)
         {
-
             if (gvEw.InvokeRequired)
             {
                 var d = new EwEventHandler(AddEwArg);
@@ -225,6 +224,8 @@ namespace EventLogReader
                 dtEs.AcceptChanges();
                 gvEw.Refresh();
             }
+
+            Application.DoEvents();
         }
         private void btnStart_Click(object sender, EventArgs e)
         {
@@ -232,7 +233,7 @@ namespace EventLogReader
             btnStart.Enabled = false;
             fs.Start();
             em.StartMonitor();
-            match.Start();
+         //   match.Start();
             btnStop.Enabled = true;
             btnStart.Enabled = true;
         }
@@ -243,7 +244,7 @@ namespace EventLogReader
             btnStart.Enabled = false;
             fs.Stop();
             em.StopMonitor();
-            match.Stop();
+         //   match.Stop();
             btnStop.Enabled = true;
             btnStart.Enabled = true;
         }

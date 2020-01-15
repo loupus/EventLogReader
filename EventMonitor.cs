@@ -21,6 +21,7 @@ namespace EventLogReader
         EventLogWatcher ewatch;
         DataAccess da;
         System.Timers.Timer t1;
+        Dictionary<string, string> Accesses;
 
         public EventMonitor()
         {
@@ -41,11 +42,14 @@ namespace EventLogReader
             if (da == null)
                 da = new DataAccess();
 
+            SetDictionary();
+
             StringBuilder sb = new StringBuilder();
             sb.Append("<QueryList>");
             sb.Append(@"<Query Id=""0"">");
             sb.Append(@"<Select Path=""Security"">");
-            sb.Append(@"*[System[(EventID=4663 or EventID=5145 or EventID=5140 or EventID=4660)");
+            sb.Append(@"*[System[(EventID=4663 or EventID=5145)");
+           // sb.Append(@"*[System[(EventID=4663 or EventID=5145 or EventID=5140 or EventID=4660 or EventID=4656 or EventID=4658)");
             sb.Append(@"]]");
           //  sb.Append(@" and TimeCreated[@SystemTime &gt;= '" + DateTime.Now.AddMinutes(-1).ToUniversalTime().ToString("o") + "']]]");
             //  sb.Append(@" and *[EventData[Data[@Name =""ObjectName""] and (Data ='" + arg.Fullname + "')]]");
@@ -169,7 +173,8 @@ namespace EventLogReader
                 tnode = xdoc.SelectSingleNode(xpaths[4], manager);
                 if (tnode != null)
                 {
-                    ew.AccessList = tnode.InnerText;
+                   // ew.AccessList = tnode.InnerText;
+                    ew.AccessList = TranslateAccessCodes(tnode.InnerText);
                 }
                 tnode = xdoc.SelectSingleNode(xpaths[5], manager);
                 if (tnode != null)
@@ -242,6 +247,52 @@ namespace EventLogReader
             //}
 
            
+        }
+
+        void SetDictionary()
+        {
+            if (Accesses == null)
+                Accesses = new Dictionary<string, string>();
+            else
+                Accesses.Clear();
+
+            Accesses.Add("4416", "ReadData");
+            Accesses.Add("4417", "WriteData");
+            Accesses.Add("4418", "AppendData");
+            Accesses.Add("4419", "ReadEA");
+            Accesses.Add("4420", "WriteEA");
+            Accesses.Add("4421", "Execute/Traverse");
+            Accesses.Add("4422", "DeleteChild");
+            Accesses.Add("4423", "ReadAttributes");
+            Accesses.Add("4424", "WriteAttributes");
+            Accesses.Add("1537", "DELETE");
+            Accesses.Add("1538", "READ_CONTROL");
+            Accesses.Add("1539", "WRITE_DAC");
+            Accesses.Add("1540", "WRITE_OWNER");
+            Accesses.Add("1541", "SYNCHRONIZE");
+            Accesses.Add("1542", "ACCESS_SYS_SEC");
+        }
+
+        string TranslateAccessCodes(string pstraccess)
+        {
+            string back = "";
+            string[] spearator = { "%%", " " };
+            string[] ss = pstraccess.Split(spearator, StringSplitOptions.RemoveEmptyEntries);
+            foreach(string s in ss)
+            {
+                back += ConvertACodeStr(s.Trim()) + " | ";
+            }
+            if (back.EndsWith(" | "))
+                back = back.Remove(back.Length - 3);
+            ss = null;
+            return back;
+        }
+
+        string ConvertACodeStr(string strcode)
+        {
+            string back = "";
+            Accesses.TryGetValue(strcode, out back);
+            return back;
         }
     }
 }
