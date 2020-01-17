@@ -233,7 +233,7 @@ namespace EventLogReader
             btnStart.Enabled = false;
             fs.Start();
             em.StartMonitor();
-         //   match.Start();
+            match.Start();
             btnStop.Enabled = true;
             btnStart.Enabled = true;
         }
@@ -244,7 +244,7 @@ namespace EventLogReader
             btnStart.Enabled = false;
             fs.Stop();
             em.StopMonitor();
-         //   match.Stop();
+            match.Stop();
             btnStop.Enabled = true;
             btnStart.Enabled = true;
         }

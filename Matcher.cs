@@ -145,6 +145,7 @@ S: = SACL Entries.
         void StartThread()
         {
             StopThread();
+            OutFlag = false;
             thMatch = new Thread(new ThreadStart(Match));
             thMatch.Start();
         }
@@ -236,23 +237,25 @@ S: = SACL Entries.
                                 break;
                         }                    
                     }
-
+                    // önce write data bul, sonra aynı time'da bir tane objectname al
                     if (temp.ChangeType == (int)WatcherChangeTypes.Created)
                     {
-                        tempList = Globals.EwArgs.FindAll(x => x.EventID == 4663  && x.Stat == FStat.None && x.AccessList.Contains("WriteData"));
-                        foreach (ewArgument e in tempList)
+                        eOnMessage?.Invoke("Match Scanning Create: " + temp.FullName);
+                        tempList = Globals.EwArgs.FindAll(x => x.EventID == 4663 && x.Stat == FStat.None);
+                        eOnMessage?.Invoke("tempList count " + tempList.Count.ToString());
+                        foreach (ewArgument ee in tempList)
                         {
-                            if (GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
+                            if (ee.AccessList.Contains("WriteData"))
                             {
-                                eOnMessage?.Invoke("Match Scanning Create: " + temp.Name);
-                                if (temp.Name == e.RelativeTargetName)
+                                eOnMessage?.Invoke(ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff"));
+                                ewArgument t = tempList.Find(x => x.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") == ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") && x.ObjectName == temp.FullName);
+                                if (t != null)
                                 {
                                     eOnMessage?.Invoke("Match found");
-
-                                    temp.SourceIp = e.IpAddress;
-                                    temp.User = e.DomainName + @"\" + e.UserName;
+                                    temp.SourceIp = "127.0.0.1";
+                                    temp.User = t.DomainName + @"\" + t.UserName;
                                     temp.Stat = FStat.Matched;
-                                    e.Stat = FStat.Matched;
+                                    t.Stat = FStat.Matched;
                                     OutPut tout = da.SaveFsValue(temp);
                                     if (!tout.OutBool)
                                     {
@@ -262,20 +265,17 @@ S: = SACL Entries.
                                     else
                                     {
                                         temp.Stat = FStat.Completed;
-                                        e.Stat = FStat.Completed;
+                                        t.Stat = FStat.Completed;
                                     }
-                                    LastEvent = e.TimeGenerated;
+                                   
+                                    LastEvent = t.TimeGenerated;
                                     break;
-                                }
+                                }                              
                             }
-                          
-
-                            if (OutFlag)
-                                break;
-                        }
+                        }                       
                     }
 
-                        if (temp.ScanCount > 100)
+                       if (temp.ScanCount > 100)
                         temp.Stat = FStat.Failed;
                     eOnEvent?.Invoke(temp);
                     tempList.Clear();
