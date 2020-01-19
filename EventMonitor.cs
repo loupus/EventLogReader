@@ -105,15 +105,18 @@ namespace EventLogReader
 
         private void EvalEventData(EventRecord er)
         {
+            
             ewArgument ew = new ewArgument();
             ew.MachineName = er.MachineName;
             ew.Name = er.ProviderName;   // todo ??          
             ew.EventID = er.Id;
             ew.RecordID = er.RecordId == null ? 0 : (long)er.RecordId;
             ew.TimeGenerated = er.TimeCreated == null ? DateTime.MinValue : (DateTime) er.TimeCreated;
+
+          //  eOnMessage?.Invoke(string.Format("RecordId:{0} TimeGenerated:{1}",ew.RecordID,ew.TimeGenerated.ToString("dd/MM/yyyy hh:mm:ss.fff")));
             //ew.ActivityID = er.ActivityId.ToString();
             //ew.RelatedActivityID = er.RelatedActivityId.ToString();
-          
+
 
             string[] xpaths =
             {
@@ -208,16 +211,18 @@ namespace EventLogReader
             manager = null;
             xdoc = null;
 
+           
             Globals.AddEwArg(ew);
             eOnEvet?.Invoke(ew);
+            if(ew.AccessList.Contains("WriteData"))
+             eOnMessage?.Invoke(string.Format("RecordId:{0} TimeGenerated:{1}", ew.RecordID, ew.TimeGenerated.ToString("dd/MM/yyyy hh:mm:ss.fff")));
             lock (Globals._DBLock)
             {
-                OutPut tout = da.InsertEwValue(ew);            // todo * ya lock la ya da başka yerde senkronla
+                OutPut tout = da.InsertEwValue(ew);          
                 if (!tout.OutBool)
                     eOnError?.Invoke(string.Format("EwWatcher Error: {0}", tout.OriginalStrErr));
             }
-        
-          
+
         }
 
         private void SetTimer()

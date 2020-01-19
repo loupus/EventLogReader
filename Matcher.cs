@@ -179,7 +179,7 @@ S: = SACL Entries.
                       //  eOnMessage?.Invoke("Event Log Count for Match: " + tempList.Count.ToString());
                         foreach (ewArgument e in tempList)
                         {
-                            if ( e.EventID == 5145 && e.AccessList.Contains("%%1537") && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
+                            if ( e.EventID == 5145 && e.AccessList.Contains("DELETE") && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
                             {
                                 eOnMessage?.Invoke("Match Scanning Shared Delete: " + temp.Name);
                                 if (temp.Name == e.RelativeTargetName)
@@ -205,7 +205,7 @@ S: = SACL Entries.
                                     break;
                                 }
                             }
-                            if (e.EventID == 4663 && e.AccessList.Contains("%%1537") && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
+                            if (e.EventID == 4663 && e.AccessList.Contains("DELETE") && GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
                             {
                                 eOnMessage?.Invoke("Match Scanning Delete: " + temp.Name);
 
@@ -237,18 +237,25 @@ S: = SACL Entries.
                                 break;
                         }                    
                     }
-                    // önce write data bul, sonra aynı time'da bir tane objectname al
+                    //todo önce write data bul, sonra aynı time'da bir tane objectname al// object name tutmuyor
                     if (temp.ChangeType == (int)WatcherChangeTypes.Created)
                     {
+                        
                         eOnMessage?.Invoke("Match Scanning Create: " + temp.FullName);
-                        tempList = Globals.EwArgs.FindAll(x => x.EventID == 4663 && x.Stat == FStat.None);
+                        tempList = Globals.EwArgs.FindAll(x => (x.EventID == 4663) && x.Stat == FStat.None );
                         eOnMessage?.Invoke("tempList count " + tempList.Count.ToString());
+                        
                         foreach (ewArgument ee in tempList)
                         {
                             if (ee.AccessList.Contains("WriteData"))
                             {
                                 eOnMessage?.Invoke(ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff"));
+
+                                // bu olmuyor
+                               int aaa = tempList.FindAll(x => x.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") == ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") && x.ObjectName == temp.FullName).Count;
+                                eOnMessage?.Invoke("Aday Sayısı:" + aaa.ToString());
                                 ewArgument t = tempList.Find(x => x.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") == ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") && x.ObjectName == temp.FullName);
+                                //  ewArgument t = tempList.Find(x => x.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") == ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff"));
                                 if (t != null)
                                 {
                                     eOnMessage?.Invoke("Match found");
@@ -267,15 +274,16 @@ S: = SACL Entries.
                                         temp.Stat = FStat.Completed;
                                         t.Stat = FStat.Completed;
                                     }
-                                   
+
                                     LastEvent = t.TimeGenerated;
                                     break;
-                                }                              
+                                }
                             }
-                        }                       
+                        }
                     }
 
-                       if (temp.ScanCount > 100)
+                 
+                    if (temp.ScanCount > 12)
                         temp.Stat = FStat.Failed;
                     eOnEvent?.Invoke(temp);
                     tempList.Clear();
