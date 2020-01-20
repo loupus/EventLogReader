@@ -22,7 +22,7 @@ namespace EventLogReader
         {
             LastEvent = new DateTime();
             da = new DataAccess();
-            offset = new TimeSpan(0, 0, 1, 0, 0);
+            offset = new TimeSpan(0, 0, 0, 0, 500); // 500 ms
             t1 = new System.Timers.Timer();
             t1.Elapsed += T1_Elapsed;
             t1.Interval = 10000;
@@ -242,27 +242,27 @@ S: = SACL Entries.
                     {
                         
                         eOnMessage?.Invoke("Match Scanning Create: " + temp.FullName);
-                        tempList = Globals.EwArgs.FindAll(x => (x.EventID == 4663) && x.Stat == FStat.None );
-                        eOnMessage?.Invoke("tempList count " + tempList.Count.ToString());
+                        tempList = Globals.EwArgs.FindAll(x => x.EventID == 4663 && x.Stat == FStat.None && x.AccessList.Contains("WriteData"));
+                       
                         
-                        foreach (ewArgument ee in tempList)
+                        foreach (ewArgument e in tempList)
                         {
-                            if (ee.AccessList.Contains("WriteData"))
+                            if (GetOffsetTimeDifference(e.TimeGenerated, temp.WhenHappened))
                             {
-                                eOnMessage?.Invoke(ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff"));
+                             
 
                                 // bu olmuyor
-                               int aaa = tempList.FindAll(x => x.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") == ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") && x.ObjectName == temp.FullName).Count;
-                                eOnMessage?.Invoke("Aday Sayısı:" + aaa.ToString());
-                                ewArgument t = tempList.Find(x => x.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") == ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") && x.ObjectName == temp.FullName);
+                               //int aaa = tempList.FindAll(x => x.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") == ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") && x.ObjectName == temp.FullName).Count;
+                               // eOnMessage?.Invoke("Aday Sayısı:" + aaa.ToString());
+                               // ewArgument t = tempList.Find(x => x.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") == ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") && x.ObjectName == temp.FullName);
                                 //  ewArgument t = tempList.Find(x => x.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff") == ee.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff"));
-                                if (t != null)
-                                {
+                                //if (t != null)
+                                //{
                                     eOnMessage?.Invoke("Match found");
                                     temp.SourceIp = "127.0.0.1";
-                                    temp.User = t.DomainName + @"\" + t.UserName;
+                                    temp.User = e.DomainName + @"\" + e.UserName;
                                     temp.Stat = FStat.Matched;
-                                    t.Stat = FStat.Matched;
+                                    e.Stat = FStat.Matched;
                                     OutPut tout = da.SaveFsValue(temp);
                                     if (!tout.OutBool)
                                     {
@@ -272,12 +272,12 @@ S: = SACL Entries.
                                     else
                                     {
                                         temp.Stat = FStat.Completed;
-                                        t.Stat = FStat.Completed;
+                                        e.Stat = FStat.Completed;
                                     }
 
-                                    LastEvent = t.TimeGenerated;
+                                    LastEvent = e.TimeGenerated;
                                     break;
-                                }
+                              //  }
                             }
                         }
                     }

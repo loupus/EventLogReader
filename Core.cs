@@ -80,7 +80,8 @@ namespace EventLogReader
             Columns.Add("AccessList", Type.GetType("System.String"));
             Columns.Add("AccessMask", Type.GetType("System.String"));
             Columns.Add("ProcessName", Type.GetType("System.String"));
-            Columns.Add("TimeGenerated", Type.GetType("System.DateTime"));
+           // Columns.Add("TimeGenerated", Type.GetType("System.DateTime"));
+            Columns.Add("TimeGenerated", Type.GetType("System.String"));
             Columns.Add("Stat", Type.GetType("System.Int32"));
         }
 

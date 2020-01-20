@@ -218,7 +218,7 @@ namespace EventLogReader
                 dw["AccessList"] = arg.AccessList;
                 dw["AccessMask"] = arg.AccessMask;
                 dw["ProcessName"] = arg.ProcessName;
-                dw["TimeGenerated"] = arg.TimeGenerated;
+                dw["TimeGenerated"] = arg.TimeGenerated.ToString("MM/dd/yyyy hh:mm:ss.fff");
                 dw["Stat"] = (int)arg.Stat;
                 dtEs.Rows.Add(dw);
                 dtEs.AcceptChanges();
