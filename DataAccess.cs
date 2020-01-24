@@ -238,6 +238,7 @@ namespace EventLogReader
             sq._AddParameter("@pUserName", parg.User);
             sq._AddParameter("@pSourceIp", parg.SourceIp);
             sq._AddParameter("@pStat", (int)parg.Stat);
+            sq._AddParameter("@pRefRecordID", parg.RefRecordID);
             back = sq._Sorgusuz("SaveFsValue", CommandType.StoredProcedure);
             return back;
         }

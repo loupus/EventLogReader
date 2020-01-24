@@ -33,6 +33,7 @@
             this.gvEw = new System.Windows.Forms.DataGridView();
             this.gvFw = new System.Windows.Forms.DataGridView();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gvEw)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gvFw)).BeginInit();
             this.SuspendLayout();
@@ -64,7 +65,7 @@
             this.gvEw.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gvEw.Location = new System.Drawing.Point(42, 82);
             this.gvEw.Name = "gvEw";
-            this.gvEw.Size = new System.Drawing.Size(1362, 299);
+            this.gvEw.Size = new System.Drawing.Size(1362, 172);
             this.gvEw.TabIndex = 2;
             // 
             // gvFw
@@ -73,25 +74,39 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gvFw.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.gvFw.Location = new System.Drawing.Point(42, 406);
+            this.gvFw.Location = new System.Drawing.Point(42, 284);
             this.gvFw.Name = "gvFw";
-            this.gvFw.Size = new System.Drawing.Size(1362, 149);
+            this.gvFw.Size = new System.Drawing.Size(1362, 197);
             this.gvFw.TabIndex = 3;
             // 
             // txtLog
             // 
-            this.txtLog.Location = new System.Drawing.Point(42, 588);
+            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtLog.Location = new System.Drawing.Point(42, 510);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(1362, 117);
+            this.txtLog.Size = new System.Drawing.Size(1362, 195);
             this.txtLog.TabIndex = 4;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(352, 39);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1436, 737);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.txtLog);
             this.Controls.Add(this.gvFw);
             this.Controls.Add(this.gvEw);
@@ -115,6 +130,7 @@
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.DataGridView gvFw;
         private System.Windows.Forms.DataGridView gvEw;
+        private System.Windows.Forms.Button button1;
     }
 }
 

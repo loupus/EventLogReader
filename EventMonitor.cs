@@ -214,8 +214,8 @@ namespace EventLogReader
            
             Globals.AddEwArg(ew);
             eOnEvet?.Invoke(ew);
-            if(ew.AccessList.Contains("WriteData"))
-             eOnMessage?.Invoke(string.Format("RecordId:{0} TimeGenerated:{1}", ew.RecordID, ew.TimeGenerated.ToString("dd/MM/yyyy hh:mm:ss.fff")));
+            //if(ew.AccessList.Contains("WriteData"))
+            // eOnMessage?.Invoke(string.Format("RecordId:{0} TimeGenerated:{1}", ew.RecordID, ew.TimeGenerated.ToString("dd/MM/yyyy hh:mm:ss.fff")));
             lock (Globals._DBLock)
             {
                 OutPut tout = da.InsertEwValue(ew);          

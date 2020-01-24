@@ -62,6 +62,7 @@
     <Compile Include="fsWatch.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Matcher.cs" />
+    <Compile Include="Matcher_Yedek.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

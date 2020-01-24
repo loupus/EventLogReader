@@ -150,7 +150,8 @@ namespace EventLogReader
                 dw["ChangeType"] = arg.ChangeType;
                 dw["User"] = arg.User;
                 dw["SourceIp"] = arg.SourceIp;
-                dw["WhenHappened"] = arg.WhenHappened;
+                dw["WhenHappened"] = arg.WhenHappened.ToString("MM/dd/yyyy hh:mm:ss.fff");
+                dw["RefRecordID"] = arg.RefRecordID;
                 dw["ScanCount"] = arg.ScanCount;
                 dw["Stat"] = (int)arg.Stat;              
                 dtFs.Rows.Add(dw);
@@ -174,7 +175,8 @@ namespace EventLogReader
                     dw["ChangeType"] = arg.ChangeType;
                     dw["User"] = arg.User;
                     dw["SourceIp"] = arg.SourceIp;
-                    dw["WhenHappened"] = arg.WhenHappened;
+                    dw["WhenHappened"] = arg.WhenHappened.ToString("MM/dd/yyyy hh:mm:ss.fff");
+                    dw["RefRecordID"] = arg.RefRecordID;
                     dw["ScanCount"] = arg.ScanCount;
                     dw["Stat"] = (int)arg.Stat;
                     break;
@@ -252,6 +254,11 @@ namespace EventLogReader
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            match.GoMatch();
         }
     }
 }

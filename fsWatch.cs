@@ -59,6 +59,7 @@ namespace EventLogReader
             if (fsw == null)
             {
                 fsw = new FileSystemWatcher(dirpath);
+                fsw.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.FileName;
                 fsw.InternalBufferSize = 1024 * 16; // 16KB
                
                 fsw.Path = dirpath;
@@ -84,7 +85,7 @@ namespace EventLogReader
 
         private void Fsw_Renamed(object sender, RenamedEventArgs e)
         {
-            fsArgument farg = new fsArgument();
+            fsArgument farg = new fsArgument();            
             farg.ChangeType = (int)e.ChangeType;
             farg.Name = e.Name;
             farg.FullName = e.FullPath;
@@ -97,7 +98,7 @@ namespace EventLogReader
         }
 
         private void Fsw_Deleted(object sender, FileSystemEventArgs e)
-        {
+        {    
             fsArgument farg = new fsArgument();       
             farg.ChangeType = (int)e.ChangeType;
             farg.Name = e.Name;
@@ -109,7 +110,7 @@ namespace EventLogReader
         }
 
         private void Fsw_Created(object sender, FileSystemEventArgs e)
-        {
+        {           
             fsArgument farg = new fsArgument();
             farg.ChangeType = (int)e.ChangeType;
             farg.Name = e.Name;
@@ -122,7 +123,7 @@ namespace EventLogReader
         }
 
         private void Fsw_Changed(object sender, FileSystemEventArgs e)
-        {
+        {           
             fsArgument farg = new fsArgument();
             farg.ChangeType = (int)e.ChangeType;
             farg.Name = e.Name;

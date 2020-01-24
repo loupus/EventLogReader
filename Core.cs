@@ -28,11 +28,13 @@ namespace EventLogReader
         public DateTime WhenHappened;
         public FStat Stat;
         public int ScanCount;
+        public long RefRecordID;
         public fsArgument()
         {
             ID = Guid.NewGuid().ToString();
             Stat = FStat.None;
             ScanCount = 0;
+            RefRecordID = 0;
         }
     };
 
@@ -104,10 +106,11 @@ namespace EventLogReader
             Columns.Add("ChangeType", Type.GetType("System.Int32"));
             Columns.Add("User", Type.GetType("System.String"));
             Columns.Add("SourceIp", Type.GetType("System.String"));
-            Columns.Add("WhenHappened", Type.GetType("System.DateTime"));
-            Columns.Add("ScanCount", Type.GetType("System.Int32"));
+            Columns.Add("WhenHappened", Type.GetType("System.String"));
+            Columns.Add("RefRecordID", Type.GetType("System.Int64"));
+            Columns.Add("ScanCount", Type.GetType("System.Int32"));          
             Columns.Add("Stat", Type.GetType("System.Int32"));
-         
+
         }
         ~FsTable()
         {
