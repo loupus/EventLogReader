@@ -61,7 +61,7 @@ namespace EventLogReader
             ewatch = new EventLogWatcher(query);
             ewatch.EventRecordWritten += Ewatch_EventRecordWritten;
 
-           // SetTimer();
+            SetTimer();
         }
         public void StartMonitor()
         {
@@ -214,8 +214,6 @@ namespace EventLogReader
            
             Globals.AddEwArg(ew);
             eOnEvet?.Invoke(ew);
-            //if(ew.AccessList.Contains("WriteData"))
-            // eOnMessage?.Invoke(string.Format("RecordId:{0} TimeGenerated:{1}", ew.RecordID, ew.TimeGenerated.ToString("dd/MM/yyyy hh:mm:ss.fff")));
             lock (Globals._DBLock)
             {
                 OutPut tout = da.InsertEwValue(ew);          
@@ -227,8 +225,7 @@ namespace EventLogReader
 
         private void SetTimer()
         {
-            // Create a timer with a two second interval.
-            t1 = new System.Timers.Timer(2000);
+            t1 = new System.Timers.Timer(1000*60*5);
             // Hook up the Elapsed event for the timer. 
             t1.Elapsed += T1_Elapsed;
             t1.AutoReset = true;
@@ -238,19 +235,8 @@ namespace EventLogReader
         private void T1_Elapsed(object sender, ElapsedEventArgs e)
         {
 
-            ////eOnMessage?.Invoke("Timer loop");
-            //if (Globals.EwArgs.Count>0)
-            //{
-            //    OutPut tout = null;
-            //    lock (Globals._EwBufferLock)
-            //    {
-            //        tout =  da.InsertEsValues(Globals.EwArgs);
-            //        Globals.EwArgs.Clear();
-            //    }
-            //    if(tout.OutBool == false)
-            //        eOnError?.Invoke(string.Format("EwWatcher Error: {0}", tout.OriginalStrErr));
-            //}
-
+           eOnMessage?.Invoke("Timer loop");
+            Globals.ClearEwList();
            
         }
 

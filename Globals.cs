@@ -71,6 +71,22 @@ namespace EventLogReader
             }
         }
 
+        public static void ClearEwList()
+        {
+            lock (_EwBufferLock)
+            {
+                EwArgs.RemoveAll(x => (DateTime.Now - x.TimeGenerated).TotalMinutes > 5); // 5 dakikadan büyükleri sil
+            }
+        }
+
+        public static void ClearFsList()
+        {
+            lock (_FsBufferLock)
+            {
+                 FsArgs.RemoveAll(x => (DateTime.Now - x.WhenHappened).TotalMinutes > 5); // 5 dakikadan büyükleri sil
+            }
+        }
+
         public static ewArgument GetFirstEw()
         {
             ewArgument back = null;

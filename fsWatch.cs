@@ -85,53 +85,65 @@ namespace EventLogReader
 
         private void Fsw_Renamed(object sender, RenamedEventArgs e)
         {
-            fsArgument farg = new fsArgument();            
-            farg.ChangeType = (int)e.ChangeType;
-            farg.Name = e.Name;
-            farg.FullName = e.FullPath;
-            farg.OldName = e.OldName;
-            farg.OldFullName = e.OldFullPath;
-            farg.WhenHappened = DateTime.Now;
-            Globals.AddFsArg(farg);
-            eOnEvet?.Invoke(farg);
-            da.SaveFsValue(farg);
+            Task.Run(() =>
+            {
+                fsArgument farg = new fsArgument();
+                farg.ChangeType = (int)e.ChangeType;
+                farg.Name = e.Name;
+                farg.FullName = e.FullPath;
+                farg.OldName = e.OldName;
+                farg.OldFullName = e.OldFullPath;
+                farg.WhenHappened = DateTime.Now;
+                Globals.AddFsArg(farg);
+                eOnEvet?.Invoke(farg);
+                da.SaveFsValue(farg);
+            }
+            );
         }
-
         private void Fsw_Deleted(object sender, FileSystemEventArgs e)
-        {    
-            fsArgument farg = new fsArgument();       
-            farg.ChangeType = (int)e.ChangeType;
-            farg.Name = e.Name;
-            farg.FullName = e.FullPath;
-            farg.WhenHappened = DateTime.Now;
-            Globals.AddFsArg(farg);
-            eOnEvet?.Invoke(farg);
-            da.SaveFsValue(farg);
+        {
+            Task.Run(() =>
+            {
+                fsArgument farg = new fsArgument();
+                farg.ChangeType = (int)e.ChangeType;
+                farg.Name = e.Name;
+                farg.FullName = e.FullPath;
+                farg.WhenHappened = DateTime.Now;
+                Globals.AddFsArg(farg);
+                eOnEvet?.Invoke(farg);
+                da.SaveFsValue(farg);
+            }
+            );
         }
-
         private void Fsw_Created(object sender, FileSystemEventArgs e)
-        {           
-            fsArgument farg = new fsArgument();
-            farg.ChangeType = (int)e.ChangeType;
-            farg.Name = e.Name;
-            farg.FullName = e.FullPath;
-            farg.WhenHappened = DateTime.Now;
-            Globals.AddFsArg(farg);
-            eOnEvet?.Invoke(farg);
-            da.SaveFsValue(farg);
-
+        {
+            Task.Run(() =>
+            {
+                fsArgument farg = new fsArgument();
+                farg.ChangeType = (int)e.ChangeType;
+                farg.Name = e.Name;
+                farg.FullName = e.FullPath;
+                farg.WhenHappened = DateTime.Now;
+                Globals.AddFsArg(farg);
+                eOnEvet?.Invoke(farg);
+                da.SaveFsValue(farg);
+            }
+            );
         }
-
         private void Fsw_Changed(object sender, FileSystemEventArgs e)
-        {           
-            fsArgument farg = new fsArgument();
-            farg.ChangeType = (int)e.ChangeType;
-            farg.Name = e.Name;
-            farg.FullName = e.FullPath;
-            farg.WhenHappened = DateTime.Now;
-            Globals.AddFsArg(farg);
-            eOnEvet?.Invoke(farg);
-            da.SaveFsValue(farg);
+        {
+            Task.Run(() =>
+            {
+                fsArgument farg = new fsArgument();
+                farg.ChangeType = (int)e.ChangeType;
+                farg.Name = e.Name;
+                farg.FullName = e.FullPath;
+                farg.WhenHappened = DateTime.Now;
+                Globals.AddFsArg(farg);
+                eOnEvet?.Invoke(farg);
+                da.SaveFsValue(farg);
+            }
+    );
         }
     }
 }
