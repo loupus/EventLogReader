@@ -8,7 +8,7 @@ using System.Security.Permissions;
 
 namespace EventLogReader
 {
-    class fsWatcher
+    class fsWatcher  // todo dublike kaldır
     {
         string dirpath = "";     
         FileSystemWatcher fsw;
@@ -25,7 +25,15 @@ namespace EventLogReader
         ~fsWatcher()
         {
             if (fsw != null)
-                fsw = null;            
+                fsw = null;
+
+
+        //Created = 1,
+        //Deleted = 2,
+        //Changed = 4,
+        //Renamed = 8, 
+        //All = 15
+
         }
 
         public bool SetDir(string pDirPath)
@@ -63,6 +71,7 @@ namespace EventLogReader
                 fsw.InternalBufferSize = 1024 * 16; // 16KB
                
                 fsw.Path = dirpath;
+                fsw.IncludeSubdirectories = true;
                 fsw.Changed += Fsw_Changed;
                 fsw.Created += Fsw_Created;
                 fsw.Deleted += Fsw_Deleted;
@@ -96,7 +105,7 @@ namespace EventLogReader
                 farg.WhenHappened = DateTime.Now;
                 Globals.AddFsArg(farg);
                 eOnEvet?.Invoke(farg);
-                da.SaveFsValue(farg);
+                da.SaveFsValue(farg);              
             }
             );
         }

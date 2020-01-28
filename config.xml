@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Config>
+  <Directory>C:\Users\hakansoyalp\Desktop\watch\</Directory>
+  <OffsetSeconds>2</OffsetSeconds>
+  <ClearMinutes>5</ClearMinutes>
+  <SqldServer>127.0.0.1</SqldServer>
+  <SqldDb>FileAudit</SqldDb>
+  <SqlIsTrusted>True</SqlIsTrusted>
+  <SqldUser>hakan</SqldUser>
+  <SqldPassword>fender2</SqldPassword>
+</Config>

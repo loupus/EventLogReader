@@ -34,8 +34,11 @@
             this.gvFw = new System.Windows.Forms.DataGridView();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.filemenu = new System.Windows.Forms.MenuStrip();
+            this.configToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.gvEw)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gvFw)).BeginInit();
+            this.filemenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStart
@@ -101,6 +104,23 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // filemenu
+            // 
+            this.filemenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.configToolStripMenuItem});
+            this.filemenu.Location = new System.Drawing.Point(0, 0);
+            this.filemenu.Name = "filemenu";
+            this.filemenu.Size = new System.Drawing.Size(1436, 24);
+            this.filemenu.TabIndex = 6;
+            this.filemenu.Text = "menuStrip1";
+            // 
+            // configToolStripMenuItem
+            // 
+            this.configToolStripMenuItem.Name = "configToolStripMenuItem";
+            this.configToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
+            this.configToolStripMenuItem.Text = "Config";
+            this.configToolStripMenuItem.Click += new System.EventHandler(this.configToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -112,12 +132,16 @@
             this.Controls.Add(this.gvEw);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnStart);
+            this.Controls.Add(this.filemenu);
+            this.MainMenuStrip = this.filemenu;
             this.Name = "Form1";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.gvEw)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gvFw)).EndInit();
+            this.filemenu.ResumeLayout(false);
+            this.filemenu.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -131,6 +155,8 @@
         private System.Windows.Forms.DataGridView gvFw;
         private System.Windows.Forms.DataGridView gvEw;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.MenuStrip filemenu;
+        private System.Windows.Forms.ToolStripMenuItem configToolStripMenuItem;
     }
 }
 

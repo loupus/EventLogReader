@@ -34,6 +34,8 @@ namespace EventLogReader
         {
             if(ewatch != null)
                 ewatch = null;
+
+            
         }
 
         public void Prepare()
@@ -71,6 +73,7 @@ namespace EventLogReader
             try
             {
                 ewatch.Enabled = true;
+                t1.Enabled = true;
                 eOnMessage?.Invoke("EwWatcher started");
             }
             catch (Exception ex)
@@ -85,7 +88,7 @@ namespace EventLogReader
         {
           
             ewatch.Enabled = false;
-            //   t1.Enabled = false;
+            t1.Enabled = false;
             eOnMessage?.Invoke("EwWatcher stopped");
         }
 
@@ -106,7 +109,7 @@ namespace EventLogReader
         private void EvalEventData(EventRecord er)
         {
             
-            ewArgument ew = new ewArgument();
+            ewArgument ew = new ewArgument();        
             ew.MachineName = er.MachineName;
             ew.Name = er.ProviderName;   // todo ??          
             ew.EventID = er.Id;
@@ -226,7 +229,6 @@ namespace EventLogReader
         private void SetTimer()
         {
             t1 = new System.Timers.Timer(1000*60*5);
-            // Hook up the Elapsed event for the timer. 
             t1.Elapsed += T1_Elapsed;
             t1.AutoReset = true;
             t1.Enabled = true;
@@ -235,7 +237,7 @@ namespace EventLogReader
         private void T1_Elapsed(object sender, ElapsedEventArgs e)
         {
 
-           eOnMessage?.Invoke("Timer loop");
+            eOnMessage?.Invoke("EW Timer loop");
             Globals.ClearEwList();
            
         }

@@ -22,17 +22,18 @@ namespace EventLogReader
         {
             LastEvent = new DateTime();
             da = new DataAccess();
-            offset = new TimeSpan(0, 0, 0, 1, 500); 
+            offset = new TimeSpan(0, 0, 0, Globals.Config.OffsetSeconds, 0);
             t1 = new System.Timers.Timer();
             t1.Elapsed += T1_Elapsed;
-            t1.Interval = 10000;
+            t1.Interval = 1000*60*10;
             t1.AutoReset = true;
             OutFlag = false;
         }
 
         private void T1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            
+            eOnMessage?.Invoke("Matcher Timer loop");
+            Globals.ClearFsList();
         }
 
         ~Matcher()
@@ -46,14 +47,14 @@ namespace EventLogReader
         {
             StartThread();
             eOnMessage?.Invoke("Matcher started");
-            //t1.Enabled = true;
+            t1.Enabled = true;
         }
 
         public void Stop()
         {
             StopThread();
             eOnMessage?.Invoke("Matcher stopped");
-            // t1.Enabled = false;
+            t1.Enabled = false;
         }
        
         void StartThread()

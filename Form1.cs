@@ -30,13 +30,24 @@ namespace EventLogReader
             Prepare();
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            dtFs.Clear();
+            dtEs.Clear();
+            dtFs = null;
+            dtEs = null;
+            Environment.Exit(0);
+        }
         private void Prepare()
         {
+            Config.GetConfig();
+
             fs = new fsWatcher();
             em = new EventMonitor();
             match = new Matcher();
 
-            fs.SetDir(@"C:\Users\hakansoyalp\Desktop\watch\");
+          //  fs.SetDir(@"C:\Users\hakansoyalp\Desktop\watch\");
+            fs.SetDir(Globals.Config.Directory);
             fs.eOnError += Fs_eOnError;
             fs.eOnEvet += Fs_eOnEvet;
             fs.eOnMessage += Fs_eOnMessage;
@@ -56,7 +67,6 @@ namespace EventLogReader
 
             dtEs = new EwTable();           
             gvEw.DataSource = dtEs;
-
         
         }
 
@@ -64,38 +74,18 @@ namespace EventLogReader
         {
             UpdateFsTable(arg);
         }
-
-        //private void Match_eOnUpdate()
-        //{
-        //    if (gvEw.InvokeRequired)
-        //    {
-        //        var d = new MUpdate(Match_eOnUpdate);
-        //        gvEw.Invoke(d, null);
-        //    }
-        //    else
-        //    {
-        //        dtEs.AcceptChanges();
-        //        gvEw.Refresh();
-        //    }
-        //}
-
-
         private void Match_eOnMessage(string arg)
         {
             AddLog(arg);
         }
-
-
         private void Match_eOnError(string arg)
         {
             AddLog(arg);
         }
-
         private void Em_eOnMessage(string arg)
         {
             AddLog(arg);
         }
-
         private void Em_eOnEvet(ewArgument arg)
         {
             AddEwArg(arg);
@@ -113,12 +103,10 @@ namespace EventLogReader
         {
             AddFsArg(arg);              
         }
-
         private void Fs_eOnError(string arg)
         {
             AddLog(arg);
         }
-
         private void AddLog(string log)
         {
             if (txtLog.InvokeRequired)
@@ -129,8 +117,6 @@ namespace EventLogReader
             else
                 txtLog.Text += log + Environment.NewLine;
         }
-
-
         private void AddFsArg(fsArgument arg)
         {
 
@@ -159,8 +145,6 @@ namespace EventLogReader
                 gvFw.Refresh();
             }
         }
-
-
         private void UpdateFsTable(fsArgument arg)
         {
             if (dtFs.Rows.Count == 0) return;
@@ -195,7 +179,6 @@ namespace EventLogReader
                 gvFw.Refresh();
             }
         }
-
         private void AddEwArg(ewArgument arg)
         {
             if (gvEw.InvokeRequired)
@@ -241,7 +224,6 @@ namespace EventLogReader
             btnStop.Enabled = true;
             btnStart.Enabled = true;
         }
-
         private void btnStop_Click(object sender, EventArgs e)
         {
             btnStop.Enabled = false;
@@ -251,16 +233,15 @@ namespace EventLogReader
             match.Stop();
             btnStop.Enabled = true;
             btnStart.Enabled = true;
-        }
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Environment.Exit(0);
-        }
-
+        }       
         private void button1_Click(object sender, EventArgs e)
         {
-            match.GoMatch();
+          //  match.GoMatch();
+        }
+        private void configToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmConfig fc = new frmConfig();
+            fc.ShowDialog();
         }
     }
 }

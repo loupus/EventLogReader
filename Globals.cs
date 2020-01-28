@@ -14,28 +14,56 @@ namespace EventLogReader
 
     public static class Globals
     {
+        public static string ConfigFile = "config.xml";
+
         public static readonly object _FsBufferLock = new object();
         public static readonly object _EwBufferLock = new object();
         public static readonly object _DBLock = new object();
         public static string localPath = @"C:\Users\hakansoyalp\Desktop\watch\";
         public static string remotePath = @"C:\Users\hakansoyalp\Desktop\watch\";
 
-        public static string SqldServer = "127.0.0.1";
-        public static string SqldDb = "FileAudit";
-        public static bool SqlIstrusted = true;
-        public static string SqldUser;
-        public static string SqldPassword;
+        //public static string SqldServer = "127.0.0.1";
+        //public static string SqldDb = "FileAudit";
+        //public static bool SqlIstrusted = true;
+        //public static string SqldUser;
+        //public static string SqldPassword;
 
         public static string ConnectionString = "";
 
+        public static class Config
+        {
+            public static string Directory;
+            public static int OffsetSeconds;
+            public static int ClearMinutes;
+
+            public static string SqldServer;
+            public static string SqldDb;
+            public static bool SqlIsTrusted;
+            public static string SqldUser;
+            public static string SqldPassword;
+
+        }
+
+        public static int GetIntValue(Object obj, int Insteadtrue = 0)
+        {
+            int back = 0;
+            if (obj != null || obj != DBNull.Value)
+            {
+                if (!Int32.TryParse(obj.ToString(), out back))
+                    back = Insteadtrue;
+            }
+            return back;
+        }
+
+
         public static void SetSqlConStr()
         {
-            if(SqlIstrusted)
+            if(Config.SqlIsTrusted)
             {
-                ConnectionString = string.Format("Server={0};Database={1};Trusted_Connection=True;",SqldServer,SqldDb,SqldUser,SqldPassword);
+                ConnectionString = string.Format("Server={0};Database={1};Trusted_Connection=True;", Config.SqldServer, Config.SqldDb);
             }
             else
-                ConnectionString = string.Format("Server={0};Database={1};User Id={2};Password={3};", SqldServer, SqldDb, SqldUser, SqldPassword);
+                ConnectionString = string.Format("Server={0};Database={1};User Id={2};Password={3};", Config.SqldServer, Config.SqldDb, Config.SqldUser, Config.SqldPassword);
           
         }
 
@@ -75,7 +103,7 @@ namespace EventLogReader
         {
             lock (_EwBufferLock)
             {
-                EwArgs.RemoveAll(x => (DateTime.Now - x.TimeGenerated).TotalMinutes > 5); // 5 dakikadan büyükleri sil
+                EwArgs.RemoveAll(x => (DateTime.Now - x.TimeGenerated).TotalMinutes > Globals.Config.ClearMinutes); 
             }
         }
 
@@ -83,7 +111,7 @@ namespace EventLogReader
         {
             lock (_FsBufferLock)
             {
-                 FsArgs.RemoveAll(x => (DateTime.Now - x.WhenHappened).TotalMinutes > 5); // 5 dakikadan büyükleri sil
+                 FsArgs.RemoveAll(x => (DateTime.Now - x.WhenHappened).TotalMinutes > Globals.Config.ClearMinutes);
             }
         }
 
