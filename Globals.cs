@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.IO;
 
 namespace EventLogReader
 {
@@ -19,14 +20,11 @@ namespace EventLogReader
         public static readonly object _FsBufferLock = new object();
         public static readonly object _EwBufferLock = new object();
         public static readonly object _DBLock = new object();
-        public static string localPath = @"C:\Users\hakansoyalp\Desktop\watch\";
-        public static string remotePath = @"C:\Users\hakansoyalp\Desktop\watch\";
 
-        //public static string SqldServer = "127.0.0.1";
-        //public static string SqldDb = "FileAudit";
-        //public static bool SqlIstrusted = true;
-        //public static string SqldUser;
-        //public static string SqldPassword;
+
+        public static bool ShowEvents = true;
+        public static bool SaveEwDb = true;
+        public static bool SaveFsDb = true;
 
         public static string ConnectionString = "";
 
@@ -74,9 +72,13 @@ namespace EventLogReader
         public static void AddFsArg(fsArgument parg)
         {
             if (parg == null) return;
-            lock(_FsBufferLock)
+        
+            lock (_FsBufferLock)
             {
-                FsArgs.Add(parg);
+                if (!FsArgs.Exists(x => x.ChangeType == parg.ChangeType && x.FullName == parg.FullName && x.WhenHappened.Minute == parg.WhenHappened.Minute))
+                {
+                    FsArgs.Add(parg);
+                }
             }
         }
 

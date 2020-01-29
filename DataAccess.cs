@@ -228,6 +228,11 @@ namespace EventLogReader
         public OutPut SaveFsValue(fsArgument parg)
         {
             OutPut back = null;
+            if (!Globals.SaveFsDb)
+            {
+                back = new OutPut(null, "", "", true);
+                return back;
+            }
             sq._AddParameter("@pID", parg.ID, true);
             sq._AddParameter("@pWhenHappened", parg.WhenHappened);
             sq._AddParameter("@pName",parg.Name);
@@ -246,6 +251,11 @@ namespace EventLogReader
         public OutPut InsertEwValue(ewArgument parg)
         {
             OutPut back = null;
+            if(!Globals.SaveEwDb)
+            {
+                back = new OutPut(null, "", "", true);
+                return back;
+            }
             sq._AddParameter("@pEventID", parg.EventID, true);
             sq._AddParameter("@pRecordID", parg.RecordID);
             sq._AddParameter("@pMachineName", parg.MachineName);

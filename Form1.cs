@@ -46,7 +46,11 @@ namespace EventLogReader
             em = new EventMonitor();
             match = new Matcher();
 
-          //  fs.SetDir(@"C:\Users\hakansoyalp\Desktop\watch\");
+            cbShowEvents.Checked = Globals.ShowEvents;
+            cbSaveEwDb.Checked = Globals.SaveEwDb;
+            cbSaveFsDb.Checked = Globals.SaveFsDb;
+
+            //  fs.SetDir(@"C:\Users\hakansoyalp\Desktop\watch\");
             fs.SetDir(Globals.Config.Directory);
             fs.eOnError += Fs_eOnError;
             fs.eOnEvet += Fs_eOnEvet;
@@ -127,6 +131,9 @@ namespace EventLogReader
             }
             else
             {
+                if (dtFs.Rows.Count > 1000)
+                    dtFs.Rows.Clear();
+
                 DataRow dw = dtFs.NewRow();
                 dw["ID"] = arg.ID;
                 dw["Name"] = arg.Name;
@@ -188,6 +195,9 @@ namespace EventLogReader
             }
             else
             {
+                if (dtEs.Rows.Count > 1000)
+                    dtEs.Rows.Clear();
+
                 DataRow dw = dtEs.NewRow();
                 dw["EventID"] = arg.EventID;
                 dw["RecordID"] = arg.RecordID;
@@ -242,6 +252,22 @@ namespace EventLogReader
         {
             frmConfig fc = new frmConfig();
             fc.ShowDialog();
+        }
+
+        private void cbShowEvents_CheckedChanged(object sender, EventArgs e)
+        {
+            Globals.ShowEvents = cbShowEvents.Checked;          
+        }
+
+        private void cbUpdateDb_CheckedChanged(object sender, EventArgs e)
+        {
+            Globals.SaveEwDb = cbSaveEwDb.Checked;
+           
+        }
+
+        private void cbSaveFsDb_CheckedChanged(object sender, EventArgs e)
+        {
+            Globals.SaveFsDb = cbSaveFsDb.Checked;
         }
     }
 }

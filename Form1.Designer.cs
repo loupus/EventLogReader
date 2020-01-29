@@ -33,9 +33,12 @@
             this.gvEw = new System.Windows.Forms.DataGridView();
             this.gvFw = new System.Windows.Forms.DataGridView();
             this.txtLog = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.filemenu = new System.Windows.Forms.MenuStrip();
             this.configToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button1 = new System.Windows.Forms.Button();
+            this.cbShowEvents = new System.Windows.Forms.CheckBox();
+            this.cbSaveEwDb = new System.Windows.Forms.CheckBox();
+            this.cbSaveFsDb = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.gvEw)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gvFw)).BeginInit();
             this.filemenu.SuspendLayout();
@@ -43,7 +46,7 @@
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(54, 39);
+            this.btnStart.Location = new System.Drawing.Point(54, 45);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
             this.btnStart.TabIndex = 0;
@@ -53,7 +56,7 @@
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(145, 39);
+            this.btnStop.Location = new System.Drawing.Point(145, 45);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(75, 23);
             this.btnStop.TabIndex = 1;
@@ -94,16 +97,6 @@
             this.txtLog.Size = new System.Drawing.Size(1362, 195);
             this.txtLog.TabIndex = 4;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(352, 39);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // filemenu
             // 
             this.filemenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -121,11 +114,58 @@
             this.configToolStripMenuItem.Text = "Config";
             this.configToolStripMenuItem.Click += new System.EventHandler(this.configToolStripMenuItem_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(352, 45);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // cbShowEvents
+            // 
+            this.cbShowEvents.AutoSize = true;
+            this.cbShowEvents.Location = new System.Drawing.Point(563, 45);
+            this.cbShowEvents.Name = "cbShowEvents";
+            this.cbShowEvents.Size = new System.Drawing.Size(89, 17);
+            this.cbShowEvents.TabIndex = 7;
+            this.cbShowEvents.Text = "Show Events";
+            this.cbShowEvents.UseVisualStyleBackColor = true;
+            this.cbShowEvents.CheckedChanged += new System.EventHandler(this.cbShowEvents_CheckedChanged);
+            // 
+            // cbSaveEwDb
+            // 
+            this.cbSaveEwDb.AutoSize = true;
+            this.cbSaveEwDb.Location = new System.Drawing.Point(670, 45);
+            this.cbSaveEwDb.Name = "cbSaveEwDb";
+            this.cbSaveEwDb.Size = new System.Drawing.Size(121, 17);
+            this.cbSaveEwDb.TabIndex = 8;
+            this.cbSaveEwDb.Text = "Save Events On Db";
+            this.cbSaveEwDb.UseVisualStyleBackColor = true;
+            this.cbSaveEwDb.CheckedChanged += new System.EventHandler(this.cbUpdateDb_CheckedChanged);
+            // 
+            // cbSaveFsDb
+            // 
+            this.cbSaveFsDb.AutoSize = true;
+            this.cbSaveFsDb.Location = new System.Drawing.Point(808, 45);
+            this.cbSaveFsDb.Name = "cbSaveFsDb";
+            this.cbSaveFsDb.Size = new System.Drawing.Size(135, 17);
+            this.cbSaveFsDb.TabIndex = 9;
+            this.cbSaveFsDb.Text = "Save Fs Events On Db";
+            this.cbSaveFsDb.UseVisualStyleBackColor = true;
+            this.cbSaveFsDb.CheckedChanged += new System.EventHandler(this.cbSaveFsDb_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1436, 737);
+            this.Controls.Add(this.cbSaveFsDb);
+            this.Controls.Add(this.cbSaveEwDb);
+            this.Controls.Add(this.cbShowEvents);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.txtLog);
             this.Controls.Add(this.gvFw);
@@ -154,9 +194,12 @@
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.DataGridView gvFw;
         private System.Windows.Forms.DataGridView gvEw;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.MenuStrip filemenu;
         private System.Windows.Forms.ToolStripMenuItem configToolStripMenuItem;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox cbShowEvents;
+        private System.Windows.Forms.CheckBox cbSaveEwDb;
+        private System.Windows.Forms.CheckBox cbSaveFsDb;
     }
 }
 

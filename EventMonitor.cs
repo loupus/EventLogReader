@@ -216,7 +216,8 @@ namespace EventLogReader
 
            
             Globals.AddEwArg(ew);
-            eOnEvet?.Invoke(ew);
+            if(Globals.ShowEvents)
+              eOnEvet?.Invoke(ew);
             lock (Globals._DBLock)
             {
                 OutPut tout = da.InsertEwValue(ew);          
